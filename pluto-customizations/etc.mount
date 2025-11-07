@@ -1,0 +1,11 @@
+[Unit]
+Description=ETC overlay
+
+[Mount]
+Where=/etc
+What=overlay
+Type=overlay
+Options=lowerdir=/etc,upperdir=/home/.etcOverlay/upper,workdir=/home/.etcOverlay/work
+
+[Install]
+WantedBy=local-fs.target

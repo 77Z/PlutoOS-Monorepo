@@ -1,0 +1,88 @@
+# Maintainer: Vince Richter <vince@77z.dev>
+
+pkgname=plymouth
+pkgver=27.004.60
+pkgrel=11
+pkgdesc='PLUTO OS Graphical boot splash screen'
+arch=(x86_64)
+url='https://www.freedesktop.org/wiki/Software/Plymouth/'
+license=(GPL-2.0-or-later)
+depends=(
+  bash
+  cairo
+  cantarell-fonts
+  filesystem
+  fontconfig
+  freetype2
+  glib2
+  glibc
+  libdrm
+  libevdev
+  libpng
+  libx11
+  libxkbcommon
+  pango
+  systemd-libs
+  xkeyboard-config
+)
+makedepends=(
+  docbook-xsl
+  git
+  gtk3
+  meson
+)
+optdepends=('gtk3: x11 renderer')
+backup=(
+  etc/logrotate.d/bootlog
+  etc/plymouth/plymouthd.conf
+)
+install='plymouth.install'
+source=(
+  "git+https://gitlab.freedesktop.org/plymouth/plymouth.git#tag=24.004.60"
+  plymouth.initcpio_hook
+  plymouth.initcpio_install
+  plymouth-shutdown.initcpio_install
+  mkinitcpio-generate-shutdown-ramfs-plymouth.conf
+  pluto-logo-text.png
+)
+b2sums=('a3d55f4f7be81bdf2ddd5c2b74a3fdb4e368c31fc41e12ab100ce2a7986cb418151b3df0d0316011710dd0e1ae99631166eecf80bc1dd5cc9054a4685266afed'
+        'afb2449b542aa3e971eab6b953c907347fdf4e499b4140a5e6736a7c99557c0d8d2fed28dbee56d84c8c619335c59bd382457d85e51145884ad0616e9095f232'
+        'b1445d5562f7c90214b76b2c2ef959305cb3c53e2d38754091f54f523e29e5ed374b3882127358d8896aa5da844c0c9bc2b56a9166962a42406c0e6a2fc01cf7'
+        '063448411de837ed38ece935719f07fd17b18830680c9fa95b7bd39a097778186c40373590504c9b44144125986304311f528c73592c29d19043b8395e6f99c2'
+        '7bb910b7402ad4372f1918be763421308534044c46d42e77af0aadcb7cbe13a99633805b36fa841f8ea1006ddb204ecea3031b96b05ec4e8d16150b2c7864629'
+        '12417025012998082af21e2d3d7c3b343f920971be0c40a64d3189a497da4f1205e0fa7ae17c4f5afcee1ff9aad31b5f6ed19195c0015c3408ae069cd21c8953')
+
+prepare() {
+  cd $pkgname
+
+  # Various fixes from upstream
+  git cherry-pick -n -m 1 24.004.60..287ae4de4547c944cd1dad696aa999b1699540bd
+
+  # Use mkinitcpio to update initrd
+  sed -i 's/^dracut -f$/mkinitcpio -P/' scripts/plymouth-update-initrd
+
+  # Change default theme
+  sed -i 's/^Theme=spinner$/Theme=bgrt/' src/plymouthd.defaults
+}
+
+build() {
+  arch-meson $pkgname build \
+    -D logo=/usr/share/pixmaps/pluto-logo-text.png
+  meson compile -C build
+}
+
+package() {
+  meson install -C build --destdir "$pkgdir"
+  rm -r "$pkgdir/run"
+
+  # Install mkinitcpio hook
+  install -Dm644 plymouth.initcpio_hook "$pkgdir/usr/lib/initcpio/hooks/$pkgname"
+  install -Dm644 plymouth.initcpio_install "$pkgdir/usr/lib/initcpio/install/$pkgname"
+
+  # Install mkinitcpio shutdown hook and systemd drop-in snippet
+  install -Dm644 plymouth-shutdown.initcpio_install "$pkgdir/usr/lib/initcpio/install/$pkgname-shutdown"
+  install -Dm644 mkinitcpio-generate-shutdown-ramfs-plymouth.conf "$pkgdir/usr/lib/systemd/system/mkinitcpio-generate-shutdown-ramfs.service.d/plymouth.conf"
+  
+  # Install logo for the spinner theme
+  install -Dm644 pluto-logo-text.png "$pkgdir/usr/share/$pkgname/themes/spinner/watermark.png"
+}

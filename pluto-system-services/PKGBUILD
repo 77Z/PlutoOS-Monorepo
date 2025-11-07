@@ -1,0 +1,41 @@
+# Maintainer: Vince Richter <vince@77z.dev>
+
+# These are not the only system services that pluto has custom enabled.
+# Some pluto packages will enable themselves (eg. pluto-bootloader-backend)
+
+pkgname=pluto-system-services
+pkgver=2025.08.04
+pkgrel=1
+pkgdesc='PlutoOS System Services'
+arch=('any')
+license=('MIT')
+url='https://pluto.77z.dev'
+depends=()
+backup=()
+source=()
+sha256sums=()
+
+package() {
+  local group link mode source_file user
+
+  declare -A symlinks
+
+  symlinks=(
+    ["etc/systemd/system/default.target"]="usr/lib/systemd/system/graphical.target"
+
+    ["etc/systemd/system/multi-user.target.wants/avahi-daemon.service"]="/usr/lib/systemd/system/avahi-daemon.service"
+    ["etc/systemd/system/multi-user.target.wants/NetworkManager.service"]="/usr/lib/systemd/system/NetworkManager.service"
+    ["etc/systemd/system/multi-user.target.wants/thermald.service"]="/usr/lib/systemd/system/thermald.service"
+    ["etc/systemd/system/multi-user.target.wants/cups.socket"]="/usr/lib/systemd/system/cups.socket"
+
+    ["etc/systemd/system/display-manager.service"]="/usr/lib/systemd/system/sddm.socket"
+  )
+
+  cd "$pkgdir"
+
+  for link in "${!symlinks[@]}"; do
+    ln -sv "${symlinks[$link]}" "$link"
+  done
+}
+
+# vim:set ts=2 sw=2 et:
