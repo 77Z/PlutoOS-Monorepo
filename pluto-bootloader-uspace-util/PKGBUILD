@@ -1,0 +1,16 @@
+pkgname=pluto-bootloader-backend
+pkgver=1.0
+pkgrel=1
+pkgdesc="PlutoOS Bootloader Backend"
+arch=(x86_64)
+url="https://pluto.77z.dev"
+license=('MIT')
+
+build() {
+	cd "$startdir"
+	dart compile exe bin/pluto_bootloader_backend.dart
+}
+
+package() {
+	install -Dm755 "$startdir/bin/pluto_bootloader_backend.exe" "$pkgdir/usr/bin/pluto_bootloader_backend"
+}
