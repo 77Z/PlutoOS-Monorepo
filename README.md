@@ -1,22 +1,23 @@
 <img
-  src="https://github.com/user-attachments/assets/59cbd405-91ea-45d6-ab0f-e5361f9d900c"
-  alt="PlutoOS V.2"
+  src="https://raw.githubusercontent.com/77Z/PlutoOS-Monorepo/refs/heads/master/Long%20Logo.png"
+  alt="PlutoOS V.3"
   style="float: right; margin-left: 10px;" />
-the opinionated operating system
+an opinionated and awesome linux distro
 
-this is a monorepo that contains some good stuff for building and maintaining pluto.
+This is a repository that contains some useful things for building and maintaining pluto. Not everything is included in here, but there's a good amount to hit the ground running if you want to learn about the internals of the OS or branch off it yourself.
 
-# what is plutoOS????
+# What is PlutoOS?
 well check out the website: [pluto.77z.dev](https://pluto.77z.dev)!
 
-it's highly opinionated, so don't get mad, but a quick rundown is
+it's a pretty opinionated OS, but I really like it. A quick rundown for you:
+- x86_64 only at the moment
 - an immutable root filesystem
-- atomic and reliable updates
+- atomic and reliable updates with RAUC
 - behaves like other distros (arch and debian) when needed using container magic
-- systemd as much as possible
+- systemd preference
 - a/b partitioning
-- (currently) a bias towards intel cpus
 - battery and performance optimizations
 - kde plasma!!
+- great driver and device support. stuff is kept very up to date
 
-a lot of the server side stuff is closed source at the moment but might be opened in the future.
+Server side stuff is closed source at the moment but might be opened in the future.
