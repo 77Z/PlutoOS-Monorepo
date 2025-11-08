@@ -13,7 +13,6 @@ source=(
   '10-wayland.conf'
   'kde_settings.conf'
   'system.conf'
-  'authkey'
   'locale.conf'
   'locale.gen'
   'etc.mount'
@@ -26,7 +25,6 @@ source=(
 sha256sums=('783ed5b1dde3019dbc54af0cba48453dfcab7121728d25da0934f9c1b7e6e6e8'
             '7ac27b84656bf840e07149ff9fa5b1c588cdaf9e60b5db54ac42b4b65de1383c'
             'df880d775aa9239237c1364addd5bbc0de51a84e65fb5bf32e8db9dfd405886b'
-            'a3882231904b23b45fd3b76e0091358be75c7a520ea4292c02351ab7b2347d37'
             '151b67da4450eb4f81143835f2342a4302284a0f336c4e13bb9de69009611c9b'
             '7aad91c4df95377205320cdeb2733fc8531f53f2e7a29632cd4db815eabd0307'
             '751967b40a69ea40852f08d9fde6f56876bff54a90cf599ed06321a5d6f02993'
@@ -57,7 +55,6 @@ package() {
     ["etc/sddm.conf.d/10-wayland.conf"]="10-wayland.conf:644:0:0"
     ["etc/sddm.conf.d/kde_settings.conf"]="kde_settings.conf:644:0:0"
     ["etc/rauc/system.conf"]="system.conf:644:0:0"
-    ["etc/rauc/authkey"]="authkey:000:0:0"
     ["etc/locale.conf"]="locale.conf:644:0:0"
     ["usr/lib/systemd/system/etc.mount"]="etc.mount:644:0:0"
     ["usr/lib/systemd/system/var.mount"]="var.mount:644:0:0"
