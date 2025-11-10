@@ -1,5 +1,5 @@
 [Unit]
-Description=VAR overlay
+Description=PlutoOS VAR overlay
 
 [Mount]
 Where=/var

@@ -1,5 +1,5 @@
 [Unit]
-Description=ETC overlay
+Description=PlutoOS ETC overlay
 
 [Mount]
 Where=/etc

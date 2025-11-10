@@ -96,6 +96,8 @@ pipewire-jack
 pipewire-alsa
 ncdu
 pluto-customizations
+pluto-os-system-config
+pluto-update-manager
 jc
 ]]
 
@@ -154,6 +156,9 @@ local pacstrapCommand = "sudo pacstrap -c -C ./pluto-pacman.conf -K ./targetroot
 print("Executing: " .. pacstrapCommand)
 os.execute(pacstrapCommand)
 
+print("Does everything look good? (Ctrl+C if not, Enter if yes)")
+local _nothing = io.read();
+
 print("Misc generation...")
 os.execute("deno run --allow-all IndexFirmware.ts")
 os.execute("sudo mv ./firmware.json ./targetroot/pluto/firmware.json")
@@ -184,6 +189,10 @@ pacman --config=/temp-pacman.conf -Rdd pacman archlinux-keyring --noconfirm
 
 echo 'en_US.UTF-8 UTF-8  ' > /etc/locale.gen
 locale-gen
+
+# make the main user for our system
+useradd -m main
+yes "default" | passwd main
 
 # Set version info in os-release file
 sed 's/UNKNOWN/]] .. plutoOSVersion .. [[/' /etc/os-release > /etc/os-release
@@ -229,7 +238,7 @@ os.execute("sudo umount ./targetroot/proc") -- this shouldn't be mounted... but 
 os.execute("sudo umount ./targetroot")
 
 print("Generating RAUC bundle... (This will take a bit)")
-os.execute("rauc --cert ../pluto-prod.cert.pem --key ../pluto-prod.key.pem bundle ./bundle PlutoOS-Update-".. plutoOSVersion ..".raucb")
+os.execute("rauc --cert ../../PRIVATE/pluto-prod.cert.pem --key ../../PRIVATE/pluto-prod.key.pem bundle ./bundle PlutoOS-Update-".. plutoOSVersion ..".raucb")
 
 --[[
 

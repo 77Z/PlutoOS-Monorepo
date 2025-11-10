@@ -1,0 +1,5 @@
+*.raucb
+pacman.log
+pacman-cache/
+targetroot/
+bundle/

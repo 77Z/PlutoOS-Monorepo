@@ -6,6 +6,8 @@ import 'dart:io';
 
 import 'package:posix/posix.dart';
 
+String grubEnvLocation = "/chainloader/grub/grubenv";
+
 String? getPrimary() {
   final cmdlineFile = File("/proc/cmdline");
   final cmdline = cmdlineFile.readAsStringSync();
@@ -19,8 +21,8 @@ String? getPrimary() {
 enum Slot { A, B }
 
 Future<bool> setPrimary(Slot slot) async {
-  var stat1 = await Process.run("bash", ["-c", "grub-editenv /boot/grub/grubenv set A_TRY=${slot == Slot.A ? "1" : "0"}"]);
-  var stat2 = await Process.run("bash", ["-c", "grub-editenv /boot/grub/grubenv set B_TRY=${slot == Slot.B ? "1" : "0"}"]);
+  var stat1 = await Process.run("bash", ["-c", "grub-editenv $grubEnvLocation set A_TRY=${slot == Slot.A ? "1" : "0"}"]);
+  var stat2 = await Process.run("bash", ["-c", "grub-editenv $grubEnvLocation set B_TRY=${slot == Slot.B ? "1" : "0"}"]);
 
   if (stat1.exitCode != 0 || stat2.exitCode != 0) return false;
 
@@ -29,7 +31,7 @@ Future<bool> setPrimary(Slot slot) async {
 
 // returns true if state is good, false if bad, null if failed to check
 Future<bool?> getState(Slot slot) async {
-  final proc = await Process.run("bash", ["-c", "grub-editenv /boot/grub/grubenv list"]);
+  final proc = await Process.run("bash", ["-c", "grub-editenv $grubEnvLocation list"]);
 
   if (proc.exitCode != 0) return null;
 
@@ -47,7 +49,7 @@ Future<bool?> getState(Slot slot) async {
 // true if successfully set, false if not
 Future<bool> setState(Slot slot, bool good) async {
 
-  var stat1 = await Process.run("bash", ["-c", "grub-editenv /boot/grub/grubenv set ${slot == Slot.A ? "A" : "B"}_GOOD=${good ? "1" : "0"}"]);
+  var stat1 = await Process.run("bash", ["-c", "grub-editenv $grubEnvLocation set ${slot == Slot.A ? "A" : "B"}_GOOD=${good ? "1" : "0"}"]);
 
   if (stat1.exitCode != 0) return false;
 
@@ -63,6 +65,13 @@ void main(List<String> args) async {
   if (args.isEmpty) {
     print("need arguments (get-primary, set-primary, get-state, set-state)");
     exit(1);
+  }
+
+  // Special flag file that allows for rauc in the installer iso to use
+  // this program despite grubenv being in a different location
+  final grubenvOverrideFile = File("/DANGER-GRUBENV-OVERRIDE");
+  if (grubenvOverrideFile.existsSync()) {
+    grubEnvLocation = grubenvOverrideFile.readAsStringSync();
   }
 
   switch (args[0]) {

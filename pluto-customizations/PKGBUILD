@@ -1,7 +1,7 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=pluto-customizations
-pkgver=2025.11.7
+pkgver=2025.11.9
 pkgrel=1
 pkgdesc='PlutoOS extended system functionality'
 arch=('any')
@@ -21,23 +21,26 @@ source=(
   'pluto-prod.cert.pem'
   'PlutoOSDark.colors'
   'PlutoOS.directory'
+  'vconsole.conf'
 )
 sha256sums=('783ed5b1dde3019dbc54af0cba48453dfcab7121728d25da0934f9c1b7e6e6e8'
             '7ac27b84656bf840e07149ff9fa5b1c588cdaf9e60b5db54ac42b4b65de1383c'
-            'df880d775aa9239237c1364addd5bbc0de51a84e65fb5bf32e8db9dfd405886b'
+            '34dd9d46e276cc07c69fe7b812ffce0fc642da27d147a75fa60201bbe7aa2ec7'
             '151b67da4450eb4f81143835f2342a4302284a0f336c4e13bb9de69009611c9b'
             '7aad91c4df95377205320cdeb2733fc8531f53f2e7a29632cd4db815eabd0307'
-            '751967b40a69ea40852f08d9fde6f56876bff54a90cf599ed06321a5d6f02993'
-            '2d6db7a1d464a90f048ded3d4f678f814d62d7094261d5bcafca77f1701713c6'
+            '188d1fbe8dfeda87cee69d7b14ac95d1a704b26db7f89469183f1ec0568e56af'
+            '4276185c9ab29e1806537e806b81c2d3a93b28b1fc95f86fcbe743cef39d7972'
             '1b71c3fa98775e52583c11a88cdbf662099d982419dc069a01f73ff11c605185'
             '7ec628840e05fe367e86447f75ff528ebae622a1b307f5c8784c73c4b442ced3'
             'cea8b92d965f1c4f5df1e8d43185ef6b841de766a13ee6de50dbf82021a4b08f'
-            '85a16c8881b90fce6937740d7351a01374533168eb0348fd753338f900153cef')
+            '85a16c8881b90fce6937740d7351a01374533168eb0348fd753338f900153cef'
+            '9d2d64b5b738ef55ecc80e236cd00caba19d3afe1921c74fa7d73c9477ebe6eb')
 
 package() {
   local group link mode source_file user
   declare -A directories
   declare -A files
+  declare -A symlinks
 
   # associative array with directories and their assigned mode, user and group
   # all paths are relative to the root directory /
@@ -48,6 +51,7 @@ package() {
     ["etc/systemd/system.conf.d"]="755:0:0"
     ["chainloader"]="755:0:0"
     ["pluto"]="755:0:0"
+    ["etc/systemd/system/local-fs.target.wants"]="755:0:0"
   )
 
   # associative array of target files, their source file, file mode, user and group ownership
@@ -62,6 +66,13 @@ package() {
     ['etc/rauc/pluto-prod.cert.pem']="pluto-prod.cert.pem:644:0:0"
     ['usr/share/color-schemes/PlutoOSDark.colors']='PlutoOSDark.colors:644:0:0'
     ['usr/share/desktop-directories/PlutoOS.directory']='PlutoOS.directory:644:0:0'
+    # shouldn't have to provide this in theory??
+    ['etc/vconsole.conf']="vconsole.conf:644:0:0"
+  )
+
+  symlinks=(
+    ["etc/systemd/system/local-fs.target.wants/etc.mount"]="/usr/lib/systemd/system/etc.mount"
+    ["etc/systemd/system/local-fs.target.wants/var.mount"]="/usr/lib/systemd/system/var.mount"
   )
 
   cd "$pkgdir"
@@ -81,6 +92,10 @@ package() {
     group="$(cut -f 4 -d ':' <<< "${files[$target_file]}")"
 
     install -vDm "$mode" -o "$user" -g "$group" "$srcdir/$source_file" "$target_file"
+  done
+
+  for link in "${!symlinks[@]}"; do
+    ln -sv "${symlinks[$link]}" "$link"
   done
 }
 
