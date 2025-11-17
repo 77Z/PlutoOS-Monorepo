@@ -4,7 +4,7 @@
 # Some pluto packages will enable themselves (eg. pluto-bootloader-backend)
 
 pkgname=pluto-system-services
-pkgver=2025.08.04
+pkgver=2025.11.15
 pkgrel=1
 pkgdesc='PlutoOS System Services'
 arch=('any')
@@ -19,6 +19,12 @@ package() {
   local group link mode source_file user
 
   declare -A symlinks
+  declare -A directories
+
+  directories=(
+    ["etc/systemd/system"]="755:0:0"
+    ["etc/systemd/system/multi-user.target.wants"]="755:0:0"
+  )
 
   symlinks=(
     ["etc/systemd/system/default.target"]="usr/lib/systemd/system/graphical.target"
@@ -27,11 +33,20 @@ package() {
     ["etc/systemd/system/multi-user.target.wants/NetworkManager.service"]="/usr/lib/systemd/system/NetworkManager.service"
     ["etc/systemd/system/multi-user.target.wants/thermald.service"]="/usr/lib/systemd/system/thermald.service"
     ["etc/systemd/system/multi-user.target.wants/cups.socket"]="/usr/lib/systemd/system/cups.socket"
+    ["etc/systemd/system/multi-user.target.wants/plutoos-mark-good.service"]="/usr/lib/systemd/system/plutoos-mark-good.service"
 
-    ["etc/systemd/system/display-manager.service"]="/usr/lib/systemd/system/sddm.socket"
+    ["etc/systemd/system/display-manager.service"]="/usr/lib/systemd/system/sddm.service"
   )
 
   cd "$pkgdir"
+
+  for dir in "${!directories[@]}"; do
+    mode="$(cut -f 1 -d ':' <<< "${directories[$dir]}")"
+    user="$(cut -f 2 -d ':' <<< "${directories[$dir]}")"
+    group="$(cut -f 3 -d ':' <<< "${directories[$dir]}")"
+
+    install -vdm "$mode" -o "$user" -g "$group" "$dir"
+  done
 
   for link in "${!symlinks[@]}"; do
     ln -sv "${symlinks[$link]}" "$link"

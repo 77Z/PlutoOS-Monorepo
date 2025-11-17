@@ -98,6 +98,10 @@ ncdu
 pluto-customizations
 pluto-os-system-config
 pluto-update-manager
+pluto-system-services
+pluto-bootloader-backend
+tailscale
+grub
 jc
 ]]
 
@@ -194,8 +198,10 @@ locale-gen
 useradd -m main
 yes "default" | passwd main
 
+usermod -aG network,video,uucp.optical,audio,wheel main
+
 # Set version info in os-release file
-sed 's/UNKNOWN/]] .. plutoOSVersion .. [[/' /etc/os-release > /etc/os-release
+sed -i 's/UNKNOWN/]] .. plutoOSVersion .. [[/' /usr/lib/os-release
 
 # Clean up system
 rm -r /usr/lib/qt6/plugins/kf6/kded/donationmessage.so

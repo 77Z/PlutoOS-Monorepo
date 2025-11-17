@@ -1,0 +1,4 @@
+[General]
+ShowBuild=True
+ExtraSoftwareData=/usr/bin/pluto-active-partition;/usr/bin/pluto-build-type
+Variant=x86_64 GENERAL PURPOSE

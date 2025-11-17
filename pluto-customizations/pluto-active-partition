@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+echo "Boot Partition:"
+pluto_bootloader_backend get-primary

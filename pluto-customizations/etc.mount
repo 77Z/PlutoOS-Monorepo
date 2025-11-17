@@ -1,5 +1,7 @@
 [Unit]
 Description=PlutoOS ETC overlay
+Requires=home.mount
+After=home.mount
 
 [Mount]
 Where=/etc

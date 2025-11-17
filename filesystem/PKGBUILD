@@ -1,7 +1,7 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=filesystem
-pkgver=2025.11.10
+pkgver=2025.11.15
 pkgrel=1
 pkgdesc='Base PlutoOS files'
 arch=('any')

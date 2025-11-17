@@ -1,5 +1,7 @@
 [Unit]
 Description=PlutoOS VAR overlay
+Requires=home.mount
+After=home.mount
 
 [Mount]
 Where=/var

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+echo "Pluto Environment Type:"
+if [ -e "/chainloader/DEV" ]; then
+    echo "DEVELOPMENT"
+else
+    echo "PRODUCTION"
+fi

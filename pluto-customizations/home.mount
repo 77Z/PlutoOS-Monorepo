@@ -1,0 +1,11 @@
+[Unit]
+Description=PlutoOS User Data Mount
+
+[Mount]
+Where=/home
+What=/dev/disk/by-label/USERHOME
+Type=ext4
+Options=defaults
+
+[Install]
+WantedBy=local-fs.target

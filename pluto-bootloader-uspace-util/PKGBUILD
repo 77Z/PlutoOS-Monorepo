@@ -1,7 +1,7 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=pluto-bootloader-backend
-pkgver=1.3
+pkgver=1.4
 pkgrel=1
 pkgdesc="PlutoOS Bootloader Backend"
 arch=(x86_64)
@@ -17,5 +17,4 @@ build() {
 package() {
 	install -Dm755 "$startdir/bin/pluto_bootloader_backend.exe" "$pkgdir/usr/bin/pluto_bootloader_backend"
 	install -Dm755 "$startdir/plutoos-mark-good.service" "$pkgdir/usr/lib/systemd/system/plutoos-mark-good.service"
-# 	ln -sv "/usr/lib/systemd/system/plutoos-mark-good.service" "etc/systemd/system/multi-user.target.wants/plutoos-mark-good.service"
 }
