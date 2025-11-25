@@ -211,6 +211,11 @@ rm -r /var/log/pacman.log
 rm -r /var/lib/pacman/
 rm -r /var/cache/pacman/
 rm -r /usr/include
+
+rm -r /usr/share/doc
+rm -r /usr/share/man
+# TODO: look into locale removal?
+
 rm /temp-pacman.conf
 rm /post-pacstrap.sh
 
