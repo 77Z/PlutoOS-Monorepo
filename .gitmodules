@@ -1,6 +1,3 @@
 [submodule "installerISO"]
 	path = installerISO
 	url = https://github.com/77Z/pluto-os-installer-iso.git
-[submodule "pluto_os_system_config"]
-	path = pluto_os_system_config
-	url = https://github.com/77Z/pluto_os_system_config.git
