@@ -1,0 +1,7 @@
+[Desktop Entry]
+Name=System Configuration
+Exec=/pluto/system_config/pluto_os_system_config
+Icon=/usr/share/pixmaps/PlutoSystemConfig.png
+Type=Application
+Categories=PlutoOS;
+StartupNotify=true

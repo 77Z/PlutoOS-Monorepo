@@ -1,0 +1,92 @@
+[
+  {
+    "name": "AMD Radeon GPU",
+    "package": "pluto-firmware-amdgpu",
+    "description": "..."
+  },
+  {
+    "name": "Qualcomm Atheros WiFi and Bluetooth Adapters",
+    "package": "pluto-firmware-atheros",
+    "description": "..."
+  },
+  {
+    "name": "Broadcom and Cypress network adapters",
+    "package": "pluto-firmware-broadcom",
+    "description": "..."
+  },
+  {
+    "name": "Cirrus Logic audio devices",
+    "package": "pluto-firmware-cirrus",
+    "description": "..."
+  },
+  {
+    "name": "Intel",
+    "package": "pluto-firmware-intel",
+    "description": "..."
+  },
+  {
+    "name": "Cavium LiquidIO server adapters",
+    "package": "pluto-firmware-liquidio",
+    "description": "..."
+  },
+  {
+    "name": "Marvell devices",
+    "package": "pluto-firmware-marvell",
+    "description": "..."
+  },
+  {
+    "name": "MediaTek and Ralink devices",
+    "package": "pluto-firmware-mediatek",
+    "description": "..."
+  },
+  {
+    "name": "Mellanox Spectrum switches",
+    "package": "pluto-firmware-mellanox",
+    "description": "..."
+  },
+  {
+    "name": "Netronome Flow Processors",
+    "package": "pluto-firmware-nfp",
+    "description": "..."
+  },
+  {
+    "name": "nVidia GPUs and SoCs",
+    "package": "pluto-firmware-nvidia",
+    "description": "..."
+  },
+  {
+    "name": "Unsorted firmware for various devices",
+    "package": "pluto-firmware-other",
+    "description": "..."
+  },
+  {
+    "name": "Qualcomm SoCs",
+    "package": "pluto-firmware-qcom",
+    "description": "..."
+  },
+  {
+    "name": "QLogic devices",
+    "package": "pluto-firmware-qlogic",
+    "description": "..."
+  },
+  {
+    "name": "ATI Radeon GPUs",
+    "package": "pluto-firmware-radeon",
+    "description": "..."
+  },
+  {
+    "name": "Realtek devices",
+    "package": "pluto-firmware-realtek",
+    "description": "..."
+  },
+  {
+    "name": "Intel CPU Microcode",
+    "package": "pluto-intel-ucode",
+    "description": "..."
+  },
+  {
+    "name": "AMD CPU Microcode",
+    "package": "pluto-amd-ucode",
+    "description": "..."
+  }
+]
