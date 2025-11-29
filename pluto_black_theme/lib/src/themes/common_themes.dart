@@ -882,7 +882,8 @@ ThemeData createYaruLightTheme({
 ThemeData createYaruDarkTheme({
   required Color primaryColor,
   Color lightBaseColor = YaruColors.porcelain,
-  Color darkBaseColor = YaruColors.jet,
+  // Color darkBaseColor = YaruColors.jet,
+  Color darkBaseColor = Colors.black,
   Color? errorColor,
   Color? elevatedButtonColor,
   Color? elevatedButtonTextColor,
