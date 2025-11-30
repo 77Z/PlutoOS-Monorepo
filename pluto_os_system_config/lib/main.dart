@@ -3,8 +3,8 @@ import 'package:pluto_os_system_config/devices_page.dart';
 import 'package:pluto_os_system_config/drivers_page.dart';
 import 'package:pluto_os_system_config/linux_environment_page.dart';
 import 'package:pluto_os_system_config/system_updates_page.dart';
+import 'package:plutoos_system_library/plutoos_system_library.dart';
 import 'package:yaru/yaru.dart';
-import './data/apis/framework_api.dart';
 
 /* class FirmwareBundle {
   final String name;
@@ -125,7 +125,7 @@ class _Home extends StatelessWidget {
           } else if (index == 4) {
             // framework module should let you control ambient light sensor, leds, etc.
             return Center(child: 
-              FrameworkApi.isFrameworkLaptop() ? const Text("You are running on framework!") : const Text("Not a framework :("),);
+              PlutoosSystemLibrary.isFrameworkLaptop() ? const Text("You are running on framework!") : const Text("Not a framework :("),);
           } else if (index == 5) {
             return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
           } else if (index == 6) {

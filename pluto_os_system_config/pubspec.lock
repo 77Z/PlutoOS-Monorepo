@@ -315,8 +315,8 @@ packages:
   plutoos_system_library:
     dependency: "direct main"
     description:
-      path: "/code/PlutoDevelopment/PlutoOS-Monorepo/plutoos_system_library/"
-      relative: false
+      path: "../plutoos_system_api"
+      relative: true
     source: path
     version: "1.0.0"
   posix:
