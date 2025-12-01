@@ -1,0 +1,20 @@
+# Maintainer: Vince Richter <vince@77z.dev>
+
+pkgname=pluto-update-manager
+pkgver=1.0
+pkgrel=1
+epoch=
+pkgdesc="PlutoOS Update Manager"
+arch=(x86_64)
+url="https://pluto.77z.dev"
+license=('MIT')
+options=(debug !strip) # dart needs debug symbols
+
+build() {
+	cd "$startdir"
+	dart compile exe bin/pluto_update_manager.dart
+}
+
+package() {
+	install -Dm4755 "$startdir/bin/pluto_update_manager.exe" "$pkgdir/pluto/pluto_update_manager"
+}

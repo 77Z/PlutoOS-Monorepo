@@ -1,0 +1,20 @@
+name: pluto_update_manager
+description: A sample command-line application.
+version: 1.0.0
+publish_to: 'none'
+
+environment:
+  sdk: ^3.9.2
+
+# Add regular dependencies here.
+dependencies:
+  path: ^1.9.0
+  http: ^1.5.0
+  desktop_notifications: ^0.6.3
+  proper_filesize: ^1.0.2
+  plutoos_system_library:
+    path: ../plutoos_system_api
+
+dev_dependencies:
+  lints: ^6.0.0
+  test: ^1.25.6

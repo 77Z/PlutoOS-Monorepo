@@ -1,0 +1,6 @@
+[Unit]
+Description=Check for PlutoOS System Updates
+
+[Service]
+Type=oneshot
+ExecStart=/pluto/pluto_update_manager
