@@ -72,7 +72,7 @@ class _Home extends StatelessWidget {
     return Scaffold(
       appBar: YaruWindowTitleBar(),
       body: YaruMasterDetailPage(
-        length: 7,
+        length: 8,
         tileBuilder: (context, index, selected, availableWidth) {
           if (index == 0) {
             return const YaruMasterTile(
@@ -109,6 +109,11 @@ class _Home extends StatelessWidget {
               title: Text("Backup"),
               leading: Icon(YaruIcons.drive_harddisk_filled),
             );
+          } else if (index == 7) {
+            return const YaruMasterTile(
+              title: Text("Power & Battery"),
+              leading: Icon(YaruIcons.battery),
+            );
           }
 
           throw Exception("Index misalligned?");
@@ -130,6 +135,8 @@ class _Home extends StatelessWidget {
             return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
           } else if (index == 6) {
             return Center(child: const Text("backup user data"),);
+          } else if (index == 7) {
+            return Center(child: const Text("show battery wattage, and breakdown of what's drawing power"));
           }
 
           return Center(child: Text("Failed to load page"));
