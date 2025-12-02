@@ -6,6 +6,7 @@ import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:http/http.dart' as http;
 import 'package:proper_filesize/proper_filesize.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
+import 'package:dbus/dbus.dart';
 
 const int NOTIFICATION_ID = 45944594;
 
@@ -14,7 +15,7 @@ NotificationsClient? notifClient;
 Future<void> downloadFileWithProgress(
   String url,
   String savePath,
-  void Function(double progress, int bytesReceived, int bytesTotal) onProgress,
+  void Function(double progress, int bytesReceived, int bytesTotal, bool contentLengthUnknown) onProgress,
 ) async {
   final client = http.Client();
   try {
@@ -32,6 +33,8 @@ Future<void> downloadFileWithProgress(
     int bytesReceived = 0;
     DateTime lastProgressTime = DateTime.now();
 
+    bool unknownContentLengthNotifSent = false;
+
 
     await for (final chunk in response.stream) {
       sink.add(chunk);
@@ -41,12 +44,16 @@ Future<void> downloadFileWithProgress(
 
         final now = DateTime.now();
         if (now.difference(lastProgressTime).inMilliseconds >= 1000) {
-          onProgress(progress, bytesReceived, contentLength);
+          onProgress(progress, bytesReceived, contentLength, false);
           lastProgressTime = now;
         }
       } else {
         // content length is unknown :(
         // this can happen when running the update server on local miniflare.
+        if (!unknownContentLengthNotifSent) {
+          onProgress(0, 0, 0, true);
+          unknownContentLengthNotifSent = true;
+        }
       }
     }
 
@@ -103,9 +110,21 @@ Future<bool> executeUpdate(String targetVersion) async {
   await downloadFileWithProgress(
     "${PlutoosSystemLibrary.getAPIUrl()}/altDownload?key=$keyString&bundleName=PlutoOS-Update-$targetVersion.raucb",
     updateBundleLocation,
-    (progress, bytesReceived, bytesTotal) {
-      print("PROGRESS: ${(progress * 100.0).toInt()}");
-      updatePercentDownloadedUI((progress * 100.0).toInt(), bytesReceived, bytesTotal);
+    (progress, bytesReceived, bytesTotal, contentLengthUnknown) {
+      if (contentLengthUnknown) {
+        notifClient!.notify(
+          "Downloading PlutoOS Update...",
+          appName: "PlutoOS",
+          body: "Progress unknown, please wait...",
+          replacesId: NOTIFICATION_ID,
+          hints: [
+            NotificationHint.urgency(NotificationUrgency.critical),
+          ]
+        );
+      } else {
+        print("PROGRESS: ${(progress * 100.0).toInt()}");
+        updatePercentDownloadedUI((progress * 100.0).toInt(), bytesReceived, bytesTotal);
+      }
     });
   
   final raucInfoProc = await Process.run("bash", [
@@ -212,7 +231,12 @@ Future<void> cleanExit(int returnCode) async {
 }
 
 void main(List<String> arguments) async {
-  notifClient = NotificationsClient();
+  var dbus = DBusClient(
+      DBusAddress(
+          // "unix:path=/run/user/1000/bus"));
+          "unix:path=/tmp/pluto_dbus_proxy"));
+
+  notifClient = NotificationsClient(bus: dbus);
 
   if (arguments.isEmpty) {
     showHelpAndDie();
