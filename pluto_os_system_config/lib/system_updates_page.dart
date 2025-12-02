@@ -6,6 +6,28 @@ import 'package:yaru/yaru.dart';
 import 'package:plutoos_system_library/models/latest_version_info.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
 
+class ActivelyUpdatingPage extends StatefulWidget {
+  const ActivelyUpdatingPage({ super.key });
+
+  State<StatefulWidget> createState() => ActivelyUpdatingPageState();
+}
+
+class ActivelyUpdatingPageState extends State<ActivelyUpdatingPage> {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        const Icon(YaruIcons.checkmark, color: YaruColors.adwaitaGreen, size: 60),
+        const Text("Update Started", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: YaruColors.adwaitaGreen),),
+        const Text("See notifications for progress")
+      ],
+    );
+
+  }
+}
+
 class SystemUpdatesPage extends StatefulWidget {
   const SystemUpdatesPage({super.key});
 
@@ -103,7 +125,9 @@ class SystemUpdatesPageState extends State<SystemUpdatesPage> {
                 PlutoosSystemLibrary.compareVersions(yourPlutoVersion!, latestVersionInfo!.stable.latestVersion))
               Center(child:
                 ElevatedButton(
-                  onPressed: () => {},
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) => const ActivelyUpdatingPage()));
+                  },
                   child: const Text("Update Now"),
                 ),
               )
