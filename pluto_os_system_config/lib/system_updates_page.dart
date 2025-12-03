@@ -1,14 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:yaru/yaru.dart';
-
 import 'package:plutoos_system_library/models/latest_version_info.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
+import 'package:yaru/yaru.dart';
 
 class ActivelyUpdatingPage extends StatefulWidget {
   const ActivelyUpdatingPage({ super.key });
 
+  @override
   State<StatefulWidget> createState() => ActivelyUpdatingPageState();
 }
 
@@ -27,6 +25,104 @@ class ActivelyUpdatingPageState extends State<ActivelyUpdatingPage> {
 
   }
 }
+
+/* -------- Beta Settings -------- */
+
+class BetaSettingsPage extends StatefulWidget {
+  const BetaSettingsPage({ super.key });
+
+  @override
+  State<StatefulWidget> createState() => BetaSettingsPageState();
+}
+
+class BetaSettingsPageState extends State<BetaSettingsPage> {
+  String betaChannel = "";
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(18.0),
+        child: Column(
+          spacing: 20,
+          children: [
+            /* Header bar */
+            Row(
+              spacing: 15,
+              children: [
+                YaruBackButton(onPressed: () => Navigator.pop(context)),
+                const Text("PlutoOS Beta Builds", style: TextStyle(fontSize: 25))
+              ],
+            ),
+        
+            /* Page contents */
+            Row(
+              spacing: 15,
+              children: [
+                const Text("Beta channel ID code"),
+                SizedBox(
+                  width: 300,
+                  child: TextField(
+                    decoration: InputDecoration(labelText: "code..."),
+                    onChanged: (value) => betaChannel = value,
+                  ),
+                ),
+                ElevatedButton(
+                  child: const Text("Switch channel"),
+                  onPressed: () {
+                    PlutoosSystemLibrary.setBetaChannel(betaChannel).then((res) {
+                      final snackBar = SnackBar(
+                        content: Text('Switched to channel: $betaChannel', style: TextStyle(fontSize: 23, color: Colors.black), textAlign: TextAlign.center),
+                        backgroundColor: Colors.white,
+                      );
+
+                      // Needed cause we're using context across async
+                      if (!context.mounted) return;
+
+                      ScaffoldMessenger.of(context).showSnackBar(snackBar);
+
+                      // Navigator.pop(context);
+                    });
+
+                  }
+                )
+              ]
+            ),
+
+            if (PlutoosSystemLibrary.isInBetaChannel()) ...[
+              Row(
+                children: [
+                  const Text("Currently enrolled in channel: ..."),
+                  TextButton(
+                    onPressed: () =>
+                      PlutoosSystemLibrary.removeSelfFromBetaChannel()
+                      .then((x) => context.mounted ? Navigator.pop(context) : null),
+                    child: const Text("Unenroll")
+                  )
+                ],
+              )
+            ],
+      
+            Spacer(),
+      
+            Row(
+              children: [
+                const Text("Force an update to downgrade a version when switching from beta back to release"),
+                Spacer(),
+                ElevatedButton(onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const ActivelyUpdatingPage())), child: const Text("Force invoke update"))
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+
+/* -------- Main Page -------- */
+
 
 class SystemUpdatesPage extends StatefulWidget {
   const SystemUpdatesPage({super.key});
@@ -59,7 +155,7 @@ class SystemUpdatesPageState extends State<SystemUpdatesPage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.all(25.0),
       child: Column(
         spacing: 15,
         children: [
@@ -78,14 +174,19 @@ class SystemUpdatesPageState extends State<SystemUpdatesPage> {
             const YaruLinearProgressIndicator(strokeWidth: 5)
           ],
 
+          if (PlutoosSystemLibrary.isInBetaChannel()) ...[
+            YaruInfoBox(
+              yaruInfoType: YaruInfoType.warning,
+              icon: Icon(YaruIcons.warning),
+              child: const Text("You're currently enrolled in a beta channel. All system updates will come from this channel as long as you're enrolled. Beta PlutoOS versions can be unstable, so use these with caution."),
+            ),
+          ],
 
           Center(
             child: Text(
               'PlutoOS generally releases new major updates once a month to ensure that you have the latest and greatest software.',
             ),
           ),
-
-
 
           Row(
             spacing: 100,
@@ -120,9 +221,9 @@ class SystemUpdatesPageState extends State<SystemUpdatesPage> {
           ),
 
          
-            if (latestVersionInfo != null &&
-                yourPlutoVersion != null &&
-                PlutoosSystemLibrary.compareVersions(yourPlutoVersion!, latestVersionInfo!.stable.latestVersion))
+          if (latestVersionInfo != null &&
+            yourPlutoVersion != null &&
+            PlutoosSystemLibrary.compareVersions(yourPlutoVersion!, latestVersionInfo!.stable.latestVersion))
               Center(child:
                 ElevatedButton(
                   onPressed: () {
@@ -130,7 +231,17 @@ class SystemUpdatesPageState extends State<SystemUpdatesPage> {
                   },
                   child: const Text("Update Now"),
                 ),
-              )
+              ),
+
+            Spacer(),
+
+            Row(children: [
+                TextButton(
+                  onPressed: () => Navigator.push(context, MaterialPageRoute(builder: (context) => const BetaSettingsPage())),
+                  child: const Text("Beta Builds"),
+                )
+              ],
+            ),
           ],
 
       ),

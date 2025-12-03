@@ -12,7 +12,7 @@ static bool systemInDevelopmentMode() {
 
 static String getAPIUrl() {
   return systemInDevelopmentMode()
-    ? "http://192.168.1.38:8787/api/v1"
+    ? "http://localhost:8787/api/v1"
     : "https://pluto-freeze.77z.dev/api/v1";
 }
 
@@ -82,6 +82,28 @@ static bool compareVersions(String currentVer, String compareTo) {
   }
 
   return true;
+}
+
+// Returns true if the user has put themselves in a PlutoOS update beta channel
+static bool isInBetaChannel() {
+  final betaFile = File("/chainloader/BETA");
+  return betaFile.existsSync();
+}
+
+// Switches PlutoOS back to release updates
+static Future<bool> removeSelfFromBetaChannel() async {
+  final betaFile = File("/chainloader/BETA");
+  betaFile.existsSync();
+
+  final res = await Process.run("/pluto/pluto_update_manager", ["unenroll-from-beta"]);
+
+  return res.exitCode == 0;
+}
+
+static Future<bool> setBetaChannel(String betaChannel) async {
+  final res = await Process.run("/pluto/pluto_update_manager", ["switch-to-beta-channel", betaChannel]);
+
+  return res.exitCode == 0;
 }
 
 }

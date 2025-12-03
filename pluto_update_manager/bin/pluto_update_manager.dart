@@ -233,8 +233,8 @@ Future<void> cleanExit(int returnCode) async {
 void main(List<String> arguments) async {
   var dbus = DBusClient(
       DBusAddress(
-          // "unix:path=/run/user/1000/bus"));
-          "unix:path=/tmp/pluto_dbus_proxy"));
+          "unix:path=/run/user/1000/bus"));
+          // "unix:path=/tmp/pluto_dbus_proxy"));
 
   notifClient = NotificationsClient(bus: dbus);
 
@@ -341,6 +341,28 @@ void main(List<String> arguments) async {
       
 
       await client.close();
+      break;
+
+    case "switch-to-beta-channel":
+      if (arguments.length != 2) await cleanExit(1);
+
+      final betaFile = File("/chainloader/BETA");
+      // Clear existing if any
+      if (betaFile.existsSync()) betaFile.deleteSync();
+
+      betaFile.writeAsStringSync(arguments[1]);
+
+      break;
+
+    case "unenroll-from-beta":
+      final betaFile = File("/chainloader/BETA");
+      if (betaFile.existsSync()) betaFile.deleteSync();
+      break;
+
+    case "get-beta-channel":
+      final betaFile = File("/chainloader/BETA");
+      if (!betaFile.existsSync()) await cleanExit(1);
+      print(betaFile.readAsStringSync());
       break;
 
     default:
