@@ -218,14 +218,14 @@ echo 1;
 echo n;
 echo ;
 echo ;
-echo +12G;
+echo +10G;
 echo t;
 echo ;
 echo 23;
 echo n;
 echo ;
 echo ;
-echo +12G;
+echo +10G;
 echo t;
 echo ;
 echo 23;
@@ -269,8 +269,8 @@ echo w;
 	console.log(`chainloader : ${chainloaderPartPath}   --->  ExFAT`);
 	console.log(`efi A       : ${efiAPartPath}   --->  EXT4`);
 	console.log(`efi B       : ${efiBPartPath}   --->  EXT4`);
-	console.log(`root A      : ${rootAPartPath}   --->  EXT4`);
-	console.log(`root B      : ${rootBPartPath}   --->  EXT4`);
+	console.log(`root A      : ${rootAPartPath}   --->  BTRFS (ZSTD)`);
+	console.log(`root B      : ${rootBPartPath}   --->  BTRFS (ZSTD)`);
 	console.log(`user home   : ${homePartPath}   --->  EXT4`);
 
 	console.log("---------------------------------------");
@@ -285,8 +285,8 @@ echo w;
 	await executeCommand(`mkfs.fat -F32 ${chainloaderPartPath}`);
 	await executeCommand(`mkfs.ext4 -F ${efiAPartPath}`);
 	await executeCommand(`mkfs.ext4 -F ${efiBPartPath}`);
-	await executeCommand(`mkfs.ext4 -F ${rootAPartPath}`);
-	await executeCommand(`mkfs.ext4 -F ${rootBPartPath}`);
+	await executeCommand(`mkfs.btrfs -F ${rootAPartPath}`);
+	await executeCommand(`mkfs.btrfs -F ${rootBPartPath}`);
 	await executeCommand(`mkfs.ext4 -F ${homePartPath}`);
 
 	formattingSpinner.stopAndPersist({ text: "formatted partitions" });
@@ -296,8 +296,8 @@ echo w;
 	await executeCommand(`mount --mkdir ${chainloaderPartPath} /mnt/chainloader`);
 	await executeCommand(`mount --mkdir ${efiAPartPath} /mnt/efiA`);
 	await executeCommand(`mount --mkdir ${efiBPartPath} /mnt/efiB`);
-	await executeCommand(`mount --mkdir ${rootAPartPath} /mnt/rootA`);
-	await executeCommand(`mount --mkdir ${rootBPartPath} /mnt/rootB`);
+	await executeCommand(`mount --mkdir ${rootAPartPath} -o compress=zstd /mnt/rootA`);
+	await executeCommand(`mount --mkdir ${rootBPartPath} -o compress=zstd /mnt/rootB`);
 	await executeCommand(`mount --mkdir ${homePartPath} /mnt/home`);
 
 	writeFileSync(`/mnt/rootA/label`, "rootA", "utf-8");
@@ -308,8 +308,11 @@ echo w;
 	await executeCommand(`e2label ${efiAPartPath} EFIA`);
 	await executeCommand(`e2label ${efiBPartPath} EFIB`);
 
-	await executeCommand(`e2label ${rootAPartPath} ROOTA`);
-	await executeCommand(`e2label ${rootBPartPath} ROOTB`);
+	// await executeCommand(`e2label ${rootAPartPath} ROOTA`);
+	// await executeCommand(`e2label ${rootBPartPath} ROOTB`);
+
+	await executeCommand(`btrfs filesystem label ${rootAPartPath} ROOTA`);
+	await executeCommand(`btrfs filesystem label ${rootBPartPath} ROOTB`);
 
 	await executeCommand(`e2label ${homePartPath} USERHOME`);
 
@@ -364,7 +367,7 @@ echo w;
 	await executeCommand(`tar -xvf /mnt/home/chainloader.tar.zst -C /mnt/chainloader --no-same-owner`);
 	await executeCommand(`rm /mnt/home/chainloader.tar.zst`);
 
-	if (isDevMode()) {
+	if (osEdition == "DEVELOPMENT") {
 		await executeCommand(`bash -c "echo '1' > /mnt/chainloader/DEV"`);
 	}
 
@@ -380,7 +383,7 @@ echo w;
 	mkdirSync("/mnt/home/.rauc");
 
 	// reload filesystems so that they show in /dev/disks/by-label
-	await executeCommand(`udevadm trigger`)
+	await executeCommand(`udevadm trigger`);
 
 	console.log("Unmounting everything EXCEPT home (rauc data-directory) and chainloader");
 	await executeCommand(`umount /mnt/efiA`);

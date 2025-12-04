@@ -100,6 +100,7 @@ pluto-os-system-config
 pluto-update-manager
 pluto-system-services
 pluto-bootloader-backend
+pluto-notification-helper
 tailscale
 grub
 jc
@@ -114,8 +115,9 @@ dbg()
 os.execute("mkdir -p bundle targetroot pacman-cache")
 
 print("Making root filesystem")
-os.execute("fallocate -l12G ./bundle/root.ext4")
-os.execute("mkfs.ext4 ./bundle/root.ext4")
+os.execute("fallocate -l10G ./bundle/root.ext4")
+-- os.execute("mkfs.ext4 ./bundle/root.ext4")
+os.execute("mkfs.btrfs ./bundle/root.ext4") -- Still called .ext4 cause... history ig
 
 print("Making boot filesystem")
 os.execute("fallocate -l512M ./bundle/boot.ext4")
@@ -145,7 +147,8 @@ bundleManifest:close();
 
 
 print("Mounting filesystems")
-os.execute("sudo mount -t ext4 -o loop ./bundle/root.ext4 ./targetroot")
+-- os.execute("sudo mount -t ext4 -o loop ./bundle/root.ext4 ./targetroot")
+os.execute("sudo mount -t btrfs -o loop,compress=zstd ./bundle/root.ext4 ./targetroot")
 os.execute("sudo mkdir ./targetroot/boot") -- sudo for root perms
 os.execute("sudo mount -t ext4 -o loop ./bundle/boot.ext4 ./targetroot/boot")
 
@@ -214,7 +217,11 @@ rm -r /usr/include
 
 rm -r /usr/share/doc
 rm -r /usr/share/man
-# TODO: look into locale removal?
+
+for dir in /usr/share/locale/*; do
+    [ "$dir" = "en_US" ] && continue
+    rm -rf "$dir"
+done
 
 rm /temp-pacman.conf
 rm /post-pacstrap.sh

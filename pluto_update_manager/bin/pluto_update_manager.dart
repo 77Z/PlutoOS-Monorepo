@@ -144,8 +144,8 @@ Future<bool> executeUpdate(String targetVersion) async {
 
   final updateSubprocess = await Process.start("bash", [
     "-c",
-    // "rauc install $updateBundleLocation"
-    "/code/PlutoDevelopment/PlutoOS-Monorepo/pluto_update_manager/bin/fakeprogress.sh"
+    "rauc install $updateBundleLocation"
+    // "/code/PlutoDevelopment/PlutoOS-Monorepo/pluto_update_manager/bin/fakeprogress.sh"
   ]);
 
   updateSubprocess.stdout
