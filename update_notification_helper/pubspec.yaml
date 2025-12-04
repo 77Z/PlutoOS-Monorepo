@@ -1,7 +1,7 @@
-name: pluto_update_manager
+name: update_notification_helper
 description: A sample command-line application.
 version: 1.0.0
-publish_to: 'none'
+# repository: https://github.com/my_org/my_repo
 
 environment:
   sdk: ^3.9.2
@@ -9,11 +9,7 @@ environment:
 # Add regular dependencies here.
 dependencies:
   path: ^1.9.0
-  http: ^1.5.0
   desktop_notifications: ^0.6.3
-  proper_filesize: ^1.0.2
-  plutoos_system_library:
-    path: ../plutoos_system_api
   posix: ^6.0.3
 
 dev_dependencies:

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:plutoos_system_library/models/latest_version_info.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
@@ -11,6 +13,13 @@ class ActivelyUpdatingPage extends StatefulWidget {
 }
 
 class ActivelyUpdatingPageState extends State<ActivelyUpdatingPage> {
+  @override
+  void initState() {
+    super.initState();
+
+    Process.run("/pluto/pluto_update_manager", ["invoke-update"]);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -52,7 +61,7 @@ class BetaSettingsPageState extends State<BetaSettingsPage> {
               spacing: 15,
               children: [
                 YaruBackButton(onPressed: () => Navigator.pop(context)),
-                const Text("PlutoOS Beta Builds", style: TextStyle(fontSize: 25))
+                const Text("PlutoOS Beta Builds", style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold))
               ],
             ),
         

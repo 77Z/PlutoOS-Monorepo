@@ -1,0 +1,20 @@
+# Maintainer: Vince Richter <vince@77z.dev>
+
+pkgname=pluto-notification-helper
+pkgver=1.1
+pkgrel=1
+epoch=
+pkgdesc="PlutoOS Notification Helper"
+arch=(x86_64)
+url="https://pluto.77z.dev"
+license=('MIT')
+options=(debug !strip) # dart needs debug symbols
+
+build() {
+	cd "$startdir"
+	dart compile exe bin/update_notification_helper.dart
+}
+
+package() {
+	install -Dm755 "$startdir/bin/update_notification_helper.exe" "$pkgdir/pluto/update_notification_helper"
+}

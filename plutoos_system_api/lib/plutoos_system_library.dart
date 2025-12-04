@@ -34,7 +34,14 @@ static bool isFrameworkLaptop() {
 }
 
 static Future<LatestVersionInfo?> getLatestVersionInfo() async {
-  var response = await http.get(Uri.parse("${getAPIUrl()}/latestVersions"));
+
+  String latestVersionsURL = "${getAPIUrl()}/latestVersions";
+
+  if (isInBetaChannel()) {
+    latestVersionsURL += "?channel=${getBetaChannel()}";
+  }
+
+  var response = await http.get(Uri.parse(latestVersionsURL));
 
   if (response.statusCode == 200) {
     return versionInfoFromJson(response.body);
@@ -104,6 +111,11 @@ static Future<bool> setBetaChannel(String betaChannel) async {
   final res = await Process.run("/pluto/pluto_update_manager", ["switch-to-beta-channel", betaChannel]);
 
   return res.exitCode == 0;
+}
+
+static String? getBetaChannel() {
+  if (!isInBetaChannel()) return null;
+  return File("/chainloader/BETA").readAsStringSync();
 }
 
 }

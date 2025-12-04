@@ -181,7 +181,7 @@ end
 postPacstrap:write([[
 #!/usr/bin/env bash
 
-# need to regen initramfs to include plymouth (and maybe ucode?)
+# need to regen initramfs to include plymouth (and helps include ucode probably)
 mkinitcpio -P
 
 pacman -Qdtq | pacman -Rns - --noconfirm

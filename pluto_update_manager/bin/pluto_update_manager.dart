@@ -4,13 +4,9 @@ import 'dart:io';
 
 import 'package:desktop_notifications/desktop_notifications.dart';
 import 'package:http/http.dart' as http;
-import 'package:proper_filesize/proper_filesize.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
-import 'package:dbus/dbus.dart';
-
-const int NOTIFICATION_ID = 45944594;
-
-NotificationsClient? notifClient;
+import 'package:posix/posix.dart' as posix;
+import 'package:proper_filesize/proper_filesize.dart';
 
 Future<void> downloadFileWithProgress(
   String url,
@@ -87,7 +83,7 @@ commands:
                      notification to the user reminding them to update.
 """);
 
-  cleanExit(1);
+  exit(1);
 }
 
 Future<bool> executeUpdate(String targetVersion) async {
@@ -112,14 +108,9 @@ Future<bool> executeUpdate(String targetVersion) async {
     updateBundleLocation,
     (progress, bytesReceived, bytesTotal, contentLengthUnknown) {
       if (contentLengthUnknown) {
-        notifClient!.notify(
+        sendNotification(
           "Downloading PlutoOS Update...",
-          appName: "PlutoOS",
           body: "Progress unknown, please wait...",
-          replacesId: NOTIFICATION_ID,
-          hints: [
-            NotificationHint.urgency(NotificationUrgency.critical),
-          ]
         );
       } else {
         print("PROGRESS: ${(progress * 100.0).toInt()}");
@@ -134,7 +125,7 @@ Future<bool> executeUpdate(String targetVersion) async {
 
   if (raucInfoProc.exitCode != 0) {
     await presentErrorToUser("Update corrupted after download :/");
-    await cleanExit(1);
+    exit(1);
   }
 
   List<String> raucInfoOutput = raucInfoProc.stdout.toString().split("\n");
@@ -148,12 +139,13 @@ Future<bool> executeUpdate(String targetVersion) async {
   }
   if (!bundleGood) {
     await presentErrorToUser("Update for the incorrect platform?");
-    await cleanExit(1);
+    exit(1);
   }
 
   final updateSubprocess = await Process.start("bash", [
     "-c",
-    "rauc install $updateBundleLocation"
+    // "rauc install $updateBundleLocation"
+    "/code/PlutoDevelopment/PlutoOS-Monorepo/pluto_update_manager/bin/fakeprogress.sh"
   ]);
 
   updateSubprocess.stdout
@@ -184,17 +176,12 @@ Future<bool> executeUpdate(String targetVersion) async {
 
 Future<void> presentErrorToUser(String error) async {
   print("Error presented: $error");
-  await notifClient!.notify(
+  await sendNotification(
     "⚠️ Failed to update PlutoOS!",
-    appName: "PlutoOS",
     body: error,
-    replacesId: NOTIFICATION_ID,
-    hints: [
-      NotificationHint.urgency(NotificationUrgency.critical),
-    ]
   );
 
-  await cleanExit(1);
+  exit(1);
 }
 
 void updatePercentDownloadedUI(int percentage, int bytesReceived, int bytesTotal) {
@@ -202,42 +189,72 @@ void updatePercentDownloadedUI(int percentage, int bytesReceived, int bytesTotal
   String prettyReceivedData = FileSize.fromBytes(bytesReceived).toString(unit: Unit.auto(size: bytesReceived, baseType: BaseType.binary));
   String prettyTotalData = FileSize.fromBytes(bytesTotal).toString(unit: Unit.auto(size: bytesTotal, baseType: BaseType.binary));
 
-  notifClient!.notify(
+  sendNotification(
     "Downloading PlutoOS Update...",
-    appName: "PlutoOS",
     body: "$percentage% Downloaded • $prettyReceivedData of $prettyTotalData",
-    replacesId: NOTIFICATION_ID,
-    hints: [
-      NotificationHint.urgency(NotificationUrgency.critical),
-    ]
   );
 }
 
 void updatePercentCompleteUI(int percentage) {
-  notifClient!.notify(
+  sendNotification(
     "Updating PlutoOS...",
-    appName: "PlutoOS",
     body: "$percentage%",
-    replacesId: NOTIFICATION_ID,
-    hints: [
-      NotificationHint.urgency(NotificationUrgency.critical),
-    ]
   );
 }
 
-Future<void> cleanExit(int returnCode) async {
-  await notifClient!.close();
-  exit(returnCode);
-}
+// Sets up this root ran application to be able to use notifications on the user's account
+/* Future<void> subroutineNeedsNotifications() async {
+  final String socketPath = "/tmp/pluto_notifs.unix";
+
+  // Does the socket already exist? If so, we'll have to clean up.
+  // This might happen if the child process can't close properly
+  {
+    final socket = File(socketPath);
+    if (await socket.exists()) await socket.delete();
+  }
+
+  // Start up child notification helper
+  Process.run("/usr/bin/sudo", [
+    "--user=#1000",
+    "/pluto/update_notification_helper"
+  ]);
+
+  // Wait for the child process to open a socket
+  while (!await File(socketPath).exists()) {
+    await Future.delayed(Duration(milliseconds: 100));
+  }
+
+  final socket = await connect(socketPath);
+  socket.add(utf8.encode("string"));
+} */
+
+DateTime lastNotificationSentTime = DateTime.now();
+
+Future<void> sendNotification(String summary,
+  {String body = '',
+  int expireTimeoutMs = -1,
+  int replacesId = 0 }) async{
+    final now = DateTime.now();
+    if (now.difference(lastNotificationSentTime).inMilliseconds >= 1000) {
+      await Process.run("/usr/bin/sudo", [
+        "--user=#1000",
+        "/pluto/update_notification_helper",
+        summary,
+        body,
+        expireTimeoutMs.toString(),
+      ]);
+    }
+  }
 
 void main(List<String> arguments) async {
-  var dbus = DBusClient(
+
+/*   var dbus = DBusClient(
       DBusAddress(
           "unix:path=/run/user/1000/bus"));
           // "unix:path=/tmp/pluto_dbus_proxy"));
 
   notifClient = NotificationsClient(bus: dbus);
-
+ */
   if (arguments.isEmpty) {
     showHelpAndDie();
   }
@@ -271,29 +288,27 @@ void main(List<String> arguments) async {
 
       if (!newVerAvail) {
         print("This version isn't newer than the system, update isn't continuing.");
-        await cleanExit(1);
+        exit(1);
       }
 
       final success = await executeUpdate(futureVersion);
 
-      if (!success) await cleanExit(1);
+      if (!success) exit(1);
 
-      await notifClient!.notify(
+      await sendNotification(
         "PlutoOS Update Complete!",
-        appName: "PlutoOS",
         body: "2025-15 → 2025-16\nRestart to use new version.",
-        replacesId: NOTIFICATION_ID,
-        hints: [
-          NotificationHint.urgency(NotificationUrgency.critical),
-        ]
       );
 
-      await cleanExit(0);
-
-      break;
+      exit(0);
 
     // invoked by a systemd timer on boot
     case "check-on-boot":
+      if (posix.geteuid() != 1000) {
+        print("This subroutine should run as normal user");
+        exit(1);
+      }
+
       var client = NotificationsClient();
       var notification = await client.notify(
         "PlutoOS Update Available",
@@ -317,34 +332,13 @@ void main(List<String> arguments) async {
       await client.close();
       break;
 
-    case "test":
-      var client = NotificationsClient();
 
-      int progress = 1;
 
-      while (true) {
-        await client.notify(
-          "Updating PlutoOS...",
-          appName: "PlutoOS",
-          body: "$progress%",
-          replacesId: NOTIFICATION_ID,
-          hints: [
-            NotificationHint.urgency(NotificationUrgency.critical),
-          ]
-        );
-        sleep(Duration(milliseconds: 100));
-        progress++;
 
-        if (progress == 100) break;
-      }
 
-      
-
-      await client.close();
-      break;
 
     case "switch-to-beta-channel":
-      if (arguments.length != 2) await cleanExit(1);
+      if (arguments.length != 2) exit(1);
 
       final betaFile = File("/chainloader/BETA");
       // Clear existing if any
@@ -361,7 +355,7 @@ void main(List<String> arguments) async {
 
     case "get-beta-channel":
       final betaFile = File("/chainloader/BETA");
-      if (!betaFile.existsSync()) await cleanExit(1);
+      if (!betaFile.existsSync()) exit(1);
       print(betaFile.readAsStringSync());
       break;
 
