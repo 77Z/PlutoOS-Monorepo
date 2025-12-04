@@ -65,12 +65,11 @@ class BetaSettingsPageState extends State<BetaSettingsPage> {
                   width: 300,
                   child: TextField(
                     decoration: InputDecoration(labelText: "code..."),
-                    onChanged: (value) => betaChannel = value,
+                    onChanged: (value) => setState(() { betaChannel = value; })
                   ),
                 ),
                 ElevatedButton(
-                  child: const Text("Switch channel"),
-                  onPressed: () {
+                  onPressed: betaChannel.isEmpty ? null : () {
                     PlutoosSystemLibrary.setBetaChannel(betaChannel).then((res) {
                       final snackBar = SnackBar(
                         content: Text('Switched to channel: $betaChannel', style: TextStyle(fontSize: 23, color: Colors.black), textAlign: TextAlign.center),
@@ -85,7 +84,8 @@ class BetaSettingsPageState extends State<BetaSettingsPage> {
                       // Navigator.pop(context);
                     });
 
-                  }
+                  },
+                  child: const Text("Switch channel"),
                 )
               ]
             ),
