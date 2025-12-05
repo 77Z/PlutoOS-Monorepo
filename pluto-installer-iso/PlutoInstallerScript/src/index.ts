@@ -285,8 +285,8 @@ echo w;
 	await executeCommand(`mkfs.fat -F32 ${chainloaderPartPath}`);
 	await executeCommand(`mkfs.ext4 -F ${efiAPartPath}`);
 	await executeCommand(`mkfs.ext4 -F ${efiBPartPath}`);
-	await executeCommand(`mkfs.btrfs -F ${rootAPartPath}`);
-	await executeCommand(`mkfs.btrfs -F ${rootBPartPath}`);
+	await executeCommand(`mkfs.btrfs -f ${rootAPartPath}`);
+	await executeCommand(`mkfs.btrfs -f ${rootBPartPath}`);
 	await executeCommand(`mkfs.ext4 -F ${homePartPath}`);
 
 	formattingSpinner.stopAndPersist({ text: "formatted partitions" });

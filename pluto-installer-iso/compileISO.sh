@@ -8,13 +8,13 @@ cd ./PlutoInstallerScript
 npm i
 node build.js
 terser dist/bundle.js > dist/minifiedBundle.js
-if [ ! -f node-v25.1.0-linux-x64.tar.xz ]; then
-	wget https://nodejs.org/dist/v25.1.0/node-v25.1.0-linux-x64.tar.xz
+if [ ! -f node-v25.2.0-linux-x64.tar.xz ]; then
+	wget https://nodejs.org/dist/v25.2.0/node-v25.2.0-linux-x64.tar.xz
 fi
-if [ ! -d "node-v25.1.0-linux-x64" ]; then
-	tar -xf node-v25.1.0-linux-x64.tar.xz
+if [ ! -d "node-v25.2.0-linux-x64" ]; then
+	tar -xf node-v25.2.0-linux-x64.tar.xz
 fi
-cp node-v25.1.0-linux-x64/bin/node installPluto
+cp node-v25.2.0-linux-x64/bin/node installPluto
 node --experimental-sea-config sea-config.json
 npx postject installPluto NODE_SEA_BLOB sea-prep.blob --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
 mkdir -p ../isoconfig/airootfs/usr/bin
