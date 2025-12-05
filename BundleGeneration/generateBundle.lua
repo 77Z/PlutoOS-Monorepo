@@ -20,12 +20,13 @@ local dbg = require('debugger')
 
 -- Global config settings
 
+-- excludes nvidia
+
 local bundlePackages = [[
 
 amd-ucode
 intel-ucode
 
-nvidia
 vulkan-radeon
 vulkan-intel
 intel-gpu-tools
