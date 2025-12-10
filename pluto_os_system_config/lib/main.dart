@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pluto_os_system_config/devices_page.dart';
 import 'package:pluto_os_system_config/drivers_page.dart';
 import 'package:pluto_os_system_config/linux_environment_page.dart';
+import 'package:pluto_os_system_config/power_page.dart';
 import 'package:pluto_os_system_config/system_updates_page.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
 import 'package:yaru/yaru.dart';
@@ -136,7 +137,9 @@ class _Home extends StatelessWidget {
           } else if (index == 6) {
             return Center(child: const Text("backup user data"),);
           } else if (index == 7) {
-            return Center(child: const Text("show battery wattage, and breakdown of what's drawing power"));
+            // return Center(child: const Text("show battery wattage, and breakdown of what's drawing power"));
+
+            return PowerPage();
           }
 
           return Center(child: Text("Failed to load page"));

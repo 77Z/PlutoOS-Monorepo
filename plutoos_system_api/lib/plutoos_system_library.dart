@@ -120,10 +120,57 @@ static String? getBetaChannel() {
 
 }
 
+class PlutoOSPower {
 
+  static String discoverBattery() {
 
+    // discover all batteries
 
-// Also include:
-// - get latest version from api
-// - compare versions
-// - get system version
+    List<FileSystemEntity> batteries = [];
+
+    final powerSupplies = Directory("/sys/class/power_supply/").listSync();
+    for (var item in powerSupplies) {
+      if (item.path.contains("BAT")) batteries.add(item);
+    }
+
+    if (batteries.isEmpty) throw Exception("No batteries found");
+
+    // TODO: we should look into picking the best battery to use if there is more than one.
+    return batteries[0].path;
+  }
+
+  static double getBatteryDrawInWatts(String batterySysfsPath) {
+    final powerNow = File("$batterySysfsPath/power_now");
+    final voltageNow = File("$batterySysfsPath/voltage_now");
+    final currentNow = File("$batterySysfsPath/current_now");
+
+    double watts = -1;
+
+    if (powerNow.existsSync()) {
+      watts = double.parse(powerNow.readAsStringSync()) / 1000000.0;
+    } else if (voltageNow.existsSync() && currentNow.existsSync()) {
+      watts = double.parse(currentNow.readAsStringSync()) / 1000000.0 * double.parse(voltageNow.readAsStringSync()) / 1000000.0;
+    }
+
+    return watts;
+  }
+
+  static int getBatteryPercentage(String batterySysfsPath) {
+    int percentage = -1;
+    final capacity = File("$batterySysfsPath/capacity");
+
+    if (capacity.existsSync()) percentage = int.parse(capacity.readAsStringSync().trim());
+
+    return percentage;
+  }
+
+  static bool isBatteryCharging(String batterySysfsPath) {
+    bool charging = false;
+    final status = File("$batterySysfsPath/status");
+
+    if (status.existsSync()) charging = status.readAsStringSync().trim() == "Charging";
+
+    return charging;
+  }
+
+}
