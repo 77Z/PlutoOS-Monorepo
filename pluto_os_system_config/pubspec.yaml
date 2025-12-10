@@ -24,3 +24,8 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/arch_logo.svg
+    - assets/ubuntu_logo.svg
+    - assets/fedora_logo.svg
+    - assets/alpine_logo.svg
