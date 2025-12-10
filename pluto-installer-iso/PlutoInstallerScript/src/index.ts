@@ -99,7 +99,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	console.log(chalk.green("PlutoOS Installer v0.2.0"));
+	console.log(chalk.green("PlutoOS Installer v1.0.0"));
 
 	if (isDevMode()) {
 		console.log(chalk.redBright("-------------------------------------"));
@@ -311,8 +311,12 @@ echo w;
 	// await executeCommand(`e2label ${rootAPartPath} ROOTA`);
 	// await executeCommand(`e2label ${rootBPartPath} ROOTB`);
 
-	await executeCommand(`btrfs filesystem label ${rootAPartPath} ROOTA`);
-	await executeCommand(`btrfs filesystem label ${rootBPartPath} ROOTB`);
+	// btrfs doesn't like when you use the device names directly when they're mounted?
+	//await executeCommand(`btrfs filesystem label ${rootAPartPath} ROOTA`);
+	//await executeCommand(`btrfs filesystem label ${rootBPartPath} ROOTB`);
+	
+	await executeCommand(`btrfs filesystem label /mnt/rootA ROOTA`);
+	await executeCommand(`btrfs filesystem label /mnt/rootB ROOTB`);
 
 	await executeCommand(`e2label ${homePartPath} USERHOME`);
 
@@ -428,8 +432,12 @@ echo w;
 	await executeCommand(`e2label ${efiAPartPath} EFIA`);
 	await executeCommand(`e2label ${efiBPartPath} EFIB`);
 
-	await executeCommand(`e2label ${rootAPartPath} ROOTA`);
-	await executeCommand(`e2label ${rootBPartPath} ROOTB`);
+	//await executeCommand(`e2label ${rootAPartPath} ROOTA`);
+	//await executeCommand(`e2label ${rootBPartPath} ROOTB`);
+
+	// Here we can use the partition paths because they are no longer mounted
+	await executeCommand(`btrfs filesystem label ${rootAPartPath} ROOTA`);
+	await executeCommand(`btrfs filesystem label ${rootBPartPath} ROOTB`);
 
 	// Setup home directory
 
@@ -448,8 +456,23 @@ echo w;
 	// we would in the real system, so we'd have to know which slot RAUC installed root to. (it's probably B, but we can't make assumptions)
 	//TODO: I'm gonna assume it's B for now lol
 
+	// Figure out what slot we're installed to
+	const raucJournal = (await executeCommand(`journalctl -u rauc.service -r -n 5`)).split("\n");
+
+	// Assume A, and we'll look to see if it's B based on the logs
+	let installedToA = true;
+	for (const line of raucJournal) {
+		if (line.includes("Marked slot rootfs.1 as active")) {
+			installedToA = false;
+			break;
+		}
+	}
+
+
+	// We'll just mount to rootB no matter which one is actually the active slot
+
 	// assemble makeshift pluto fs
-	await executeCommand(`mount ${rootBPartPath} /mnt/rootB`);
+	await executeCommand(`mount ${installedToA ? rootAPartPath : rootBPartPath} /mnt/rootB`);
 	await executeCommand(`mount ${chainloaderPartPath} /mnt/rootB/chainloader`);
 	await executeCommand(`mount ${homePartPath} /mnt/rootB/home`);
 	await executeCommand(`mount -t overlay overlay -o lowerdir=/mnt/rootB/etc,upperdir=/mnt/rootB/home/.etcOverlay/upper,workdir=/mnt/rootB/home/.etcOverlay/work /mnt/rootB/etc`);
@@ -468,10 +491,10 @@ echo w;
 	await executeCommand(`echo "${hostname}" > /mnt/rootB/etc/hostname`);
 
 	// lock screen on boot
-	await executeCommand(`mkdir /mnt/rootB/home/.config`);
-	await executeCommand(`bash -c "echo -e '[Daemon]\nLockOnStart=true' > /mnt/rootB/home/.config/kscreenlockerrc"`);
-	await executeCommand(`chown -R 1000:1000 /mnt/rootB/home/.config`);
-	await executeCommand(`chmod 710 /mnt/rootB/home/.config`);
+	await executeCommand(`mkdir /mnt/rootB/home/main/.config`);
+	await executeCommand(`bash -c "echo -e '[Daemon]\nLockOnStart=true' > /mnt/rootB/home/main/.config/kscreenlockerrc"`);
+	await executeCommand(`chown -R 1000:1000 /mnt/rootB/home/main/.config`);
+	await executeCommand(`chmod 710 /mnt/rootB/home/main/.config`);
 
 	await executeCommand(`umount /mnt/rootB/etc`);
 	await executeCommand(`umount /mnt/rootB/chainloader`);
