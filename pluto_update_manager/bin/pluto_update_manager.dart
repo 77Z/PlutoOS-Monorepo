@@ -142,6 +142,13 @@ Future<bool> executeUpdate(String targetVersion) async {
     exit(1);
   }
 
+  // before we start, we need to capture the drive labels associated
+  // devs to reassign them after bundle installation.
+  final EFIAdevPath = File("/dev/disk/by-label/EFIA").resolveSymbolicLinksSync();
+  final EFIBdevPath = File("/dev/disk/by-label/EFIB").resolveSymbolicLinksSync();
+  final ROOTAdevPath = File("/dev/disk/by-label/ROOTA").resolveSymbolicLinksSync();
+  final ROOTBdevPath = File("/dev/disk/by-label/ROOTB").resolveSymbolicLinksSync();
+
   final updateSubprocess = await Process.start("bash", [
     "-c",
     "rauc install $updateBundleLocation"
@@ -169,6 +176,18 @@ Future<bool> executeUpdate(String targetVersion) async {
     final updateBundle = File(updateBundleLocation);
     if (updateBundle.existsSync()) updateBundle.deleteSync();
   }
+
+  // reassign labels captured earlier
+  // btrfs doesn't like when you use the device names directly when they're mounted,
+  // but in this case it doesn't really matter cause the one that's mounted is already
+  // labelled, so one of these will fail and that's okay.
+  await Process.run("bash", ["-c", "btrfs filesystem label $ROOTAdevPath ROOTA"]);
+  await Process.run("bash", ["-c", "btrfs filesystem label $ROOTBdevPath ROOTB"]);
+
+  await Process.run("bash", ["-c", "e2label $EFIAdevPath EFIA"]);
+  await Process.run("bash", ["-c", "e2label $EFIBdevPath EFIB"]);
+
+  await Process.run("udevadm", ["trigger"]);
 
 
   return true;
@@ -236,6 +255,8 @@ Future<void> sendNotification(String summary,
   int replacesId = 0 }) async{
     final now = DateTime.now();
     if (now.difference(lastNotificationSentTime).inMilliseconds >= 1000) {
+      print("[PUM] $summary : $body");
+
       await Process.run("/usr/bin/sudo", [
         "--user=#1000",
         "/pluto/update_notification_helper",
@@ -286,10 +307,12 @@ void main(List<String> arguments) async {
 
       print("$currentVersion --> $futureVersion");
 
-      if (!newVerAvail) {
+      // We're assuming now that if the user can run this command,
+      // they absolutely do want to update the system
+      /* if (!newVerAvail) {
         print("This version isn't newer than the system, update isn't continuing.");
         exit(1);
-      }
+      } */
 
       final success = await executeUpdate(futureVersion);
 
@@ -297,7 +320,7 @@ void main(List<String> arguments) async {
 
       await sendNotification(
         "PlutoOS Update Complete!",
-        body: "2025-15 → 2025-16\nRestart to use new version.",
+        body: "$currentVersion → $futureVersion\nRestart to use new version.",
       );
 
       exit(0);

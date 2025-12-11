@@ -4,4 +4,4 @@
 # <file system> <dir> <type> <options> <dump> <pass>
 #LABEL=EFIA  /efia   vfat    ro,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
 #LABEL=EFIB  /efib   vfat    ro,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
-LABEL=CHAINLOADER   /chainloader vfat    ro,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2
+LABEL=CHAINLOADER   /chainloader vfat    rw,relatime,fmask=0022,dmask=0022,codepage=437,iocharset=ascii,shortname=mixed,utf8,errors=remount-ro	0 2

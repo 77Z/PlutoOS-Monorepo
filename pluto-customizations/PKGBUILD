@@ -1,8 +1,8 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=pluto-customizations
-pkgver=2025.11.18
-pkgrel=1
+pkgver=2025.12.10
+pkgrel=2
 pkgdesc='PlutoOS system functionality'
 arch=('any')
 license=('MIT')
@@ -48,7 +48,7 @@ sha256sums=('783ed5b1dde3019dbc54af0cba48453dfcab7121728d25da0934f9c1b7e6e6e8'
             'db1da0f29232ca9c1536666cab2058b694a00787db0daa70545c75f2f7ff554c'
             '3d326503e2441742d7cc6ae14a769906fdad8b0238ef9062124ec1c939e727db'
             '66cae2ab332b593816eeb735e03dd0c1fb4970ba8ea36203f0f33496851bb9b5'
-            'f1eb3b6301d76904fe71855a3e6a97e0f79714da6f7c0b89f37e71ab71df29c7'
+            'd647a3ee86c56a9df16af9f66f11668d6f5d439af1460399ac387efddfeb221f'
             '8afe00a06fb4f9a63a37fe5eaf14481553d030f06461f47c620805ddba2b44b5'
             '9a4732a72f6a64ae76d96f474d719d0dc15dea8993c6729640f639221bef4b56')
 

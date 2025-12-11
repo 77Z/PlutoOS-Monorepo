@@ -105,6 +105,9 @@ pluto-notification-helper
 tailscale
 grub
 jc
+slimbookbattery
+sudo
+btrfs-progs
 ]]
 
 
@@ -176,6 +179,12 @@ os.execute("deno run --allow-all InjectPlymouthMkinitcpio.ts")
 os.execute("sudo mv ./mkinitcpio.conf ./targetroot/etc/mkinitcpio.conf")
 os.execute("sudo chmod 0644 ./targetroot/etc/mkinitcpio.conf")
 
+os.execute("sudo rm ./targetroot/usr/share/color-schemes/BreezeDark.colors")
+os.execute("sudo cp ./OverrideColors.colors ./targetroot/usr/share/color-schemes/BreezeDark.colors")
+
+os.execute("sudo cp ../../PRIVATE/authkey ./targetroot/etc/rauc/authkey")
+os.execute("sudo chmod 400 ./targetroot/etc/rauc/authkey")
+
 print("Writing chroot commands...")
 local postPacstrap = io.open("./post-pacstrap.sh", "w")
 if postPacstrap == nil then
@@ -202,7 +211,7 @@ locale-gen
 useradd -m main
 yes "default" | passwd main
 
-usermod -aG network,video,uucp.optical,audio,wheel main
+usermod -aG network,video,uucp,optical,audio,wheel main
 
 # Set version info in os-release file
 sed -i 's/UNKNOWN/]] .. plutoOSVersion .. [[/' /usr/lib/os-release

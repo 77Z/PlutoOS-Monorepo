@@ -496,6 +496,12 @@ echo w;
 	await executeCommand(`chown -R 1000:1000 /mnt/rootB/home/main/.config`);
 	await executeCommand(`chmod 710 /mnt/rootB/home/main/.config`);
 
+	// bootstrap initial grubenv
+	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set A_TRY=${installedToA ? "1" : "0"}`);
+	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set B_TRY=${installedToA ? "0" : "1"}`);
+	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set A_GOOD=1`);
+	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set B_GOOD=1`);
+
 	await executeCommand(`umount /mnt/rootB/etc`);
 	await executeCommand(`umount /mnt/rootB/chainloader`);
 	await executeCommand(`umount /mnt/rootB/home`);
