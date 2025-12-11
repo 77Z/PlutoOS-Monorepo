@@ -12,7 +12,7 @@ static bool systemInDevelopmentMode() {
 
 static String getAPIUrl() {
   return systemInDevelopmentMode()
-    ? "http://192.168.1.38:8787/api/v1"
+    ? /*"http://192.168.1.38:8787/api/v1"*/ "http://172.25.21.239:8787/api/v1"
     : "https://pluto-freeze.77z.dev/api/v1";
 }
 
@@ -117,6 +117,36 @@ static String? getBetaChannel() {
   if (!isInBetaChannel()) return null;
   return File("/chainloader/BETA").readAsStringSync();
 }
+
+}
+
+class PlutoDevice {
+
+  static bool isAMDFramework() {
+    if (!PlutoosSystemLibrary.isFrameworkLaptop()) return false;
+
+    final res = Process.runSync("lscpu", []);
+    final split = res.stdout.toString().split("\n");
+
+    for (final line in split) {
+      if (line.startsWith("Vendor ID:") && line.contains("AuthenticAMD")) return true;
+    }
+
+    return false;
+  }
+
+  static bool isIntelFramework() {
+    if (!PlutoosSystemLibrary.isFrameworkLaptop()) return false;
+
+    final res = Process.runSync("lscpu", []);
+    final split = res.stdout.toString().split("\n");
+
+    for (final line in split) {
+      if (line.startsWith("Vendor ID:") && line.contains("GenuineIntel")) return true;
+    }
+
+    return false;
+  }
 
 }
 

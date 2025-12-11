@@ -24,6 +24,7 @@ package() {
   directories=(
     ["etc/systemd/system"]="755:0:0"
     ["etc/systemd/system/multi-user.target.wants"]="755:0:0"
+    ["etc/systemd/system/graphical.target.wants"]="755:0:0"
   )
 
   symlinks=(
@@ -34,6 +35,9 @@ package() {
     ["etc/systemd/system/multi-user.target.wants/thermald.service"]="/usr/lib/systemd/system/thermald.service"
     ["etc/systemd/system/multi-user.target.wants/cups.socket"]="/usr/lib/systemd/system/cups.socket"
     ["etc/systemd/system/multi-user.target.wants/plutoos-mark-good.service"]="/usr/lib/systemd/system/plutoos-mark-good.service"
+
+    ["etc/systemd/system/multi-user.target.wants/tlp.service"]="/usr/lib/systemd/system/tlp.service"
+    ["etc/systemd/system/graphical.target.wants/tlp-pd.service"]="/usr/lib/systemd/system/tlp-pd.service"
 
     ["etc/systemd/system/display-manager.service"]="/usr/lib/systemd/system/sddm.service"
   )

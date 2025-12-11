@@ -75,6 +75,7 @@ plymouth
 rauc
 thermald
 tlp
+tlp-pd
 unzip
 zip
 plasma
@@ -105,7 +106,6 @@ pluto-notification-helper
 tailscale
 grub
 jc
-slimbookbattery
 sudo
 btrfs-progs
 ]]
