@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pluto_os_system_config/about_page.dart';
 import 'package:pluto_os_system_config/devices_page.dart';
 import 'package:pluto_os_system_config/drivers_page.dart';
 import 'package:pluto_os_system_config/linux_environment_page.dart';
@@ -73,7 +74,7 @@ class _Home extends StatelessWidget {
     return Scaffold(
       appBar: YaruWindowTitleBar(),
       body: YaruMasterDetailPage(
-        length: 8,
+        length: 9,
         tileBuilder: (context, index, selected, availableWidth) {
           if (index == 0) {
             return const YaruMasterTile(
@@ -115,6 +116,16 @@ class _Home extends StatelessWidget {
               title: Text("Power & Battery"),
               leading: Icon(YaruIcons.battery),
             );
+          } else if (index == 8) {
+            return Column(
+              children: [
+                SizedBox(height: 50, width: 1,),
+                const YaruMasterTile(
+                  title: Text("About System"),
+                  leading: Icon(YaruIcons.information),
+                )
+              ],
+            );
           }
 
           throw Exception("Index misalligned?");
@@ -140,6 +151,8 @@ class _Home extends StatelessWidget {
             // return Center(child: const Text("show battery wattage, and breakdown of what's drawing power"));
 
             return PowerPage();
+          } else if (index == 8) {
+            return AboutPage();
           }
 
           return Center(child: Text("Failed to load page"));
