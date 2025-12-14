@@ -1,5 +1,5 @@
 [Unit]
-Description=PlutoOS VAR overlay
+Description=PlutoOS VAR Overlay
 Requires=home.mount
 After=home.mount
 
@@ -7,7 +7,7 @@ After=home.mount
 Where=/var
 What=overlay
 Type=overlay
-Options=lowerdir=/var,upperdir=/home/.varOverlay/upper,workdir=/home/.varOverlay/work
+Options=lowerdir=/var,upperdir=/home/.varOverlay/upper,workdir=/home/.varOverlay/work,index=off
 
 [Install]
 WantedBy=local-fs.target

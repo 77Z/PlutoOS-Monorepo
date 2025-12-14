@@ -12,7 +12,7 @@ static bool systemInDevelopmentMode() {
 
 static String getAPIUrl() {
   return systemInDevelopmentMode()
-    ? /*"http://192.168.1.38:8787/api/v1"*/ "http://172.25.21.239:8787/api/v1"
+    ? "http://192.168.1.38:8787/api/v1"
     : "https://pluto-freeze.77z.dev/api/v1";
 }
 

@@ -1,5 +1,5 @@
 [Unit]
-Description=PlutoOS ETC overlay
+Description=PlutoOS ETC Overlay
 Requires=home.mount
 After=home.mount
 
@@ -7,7 +7,7 @@ After=home.mount
 Where=/etc
 What=overlay
 Type=overlay
-Options=lowerdir=/etc,upperdir=/home/.etcOverlay/upper,workdir=/home/.etcOverlay/work
+Options=lowerdir=/etc,upperdir=/home/.etcOverlay/upper,workdir=/home/.etcOverlay/work,index=off
 
 [Install]
 WantedBy=local-fs.target

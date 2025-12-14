@@ -51,7 +51,7 @@ class AboutPageState extends State<AboutPage> {
 
     details.deviceModel = "${(await File("/sys/class/dmi/id/board_vendor").readAsString()).trim()} ${(await File("/sys/class/dmi/id/product_name").readAsString()).trim()}";
 
-    additionalDetailsReady = true;
+    setState(() =>  additionalDetailsReady = true);
   }
 
   @override Widget build(BuildContext context) {

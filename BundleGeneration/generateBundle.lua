@@ -11,8 +11,9 @@ The pacman package sources are listed in the pluto-pacman.conf
 that lives next to this script. It uses mostly base archlinux
 stuff but there are some package overrides provided by "server"
 
-"server" is expected to belong in /etc/hosts and points to the
-PlutoOS live pacman repo.
+"infra.local.77z.dev" is where the live pacman repo is in this
+case. But you can change where it points in the pacman.conf
+sibling file here.
 
 ]]
 
@@ -22,7 +23,90 @@ local dbg = require('debugger')
 
 -- excludes nvidia
 
+-- KDE packages notably missing from the bundle
+	-- kwin-x11 : we don't support X11
+	-- plasma-browser-integration : all browsers will have to be installed via flatpak, so this is useless
+	-- plasma-sdk			: no dev tools needed here
+	-- qqc2-breeze-style	: no dev tools needed here
+	-- plymouth-kcm : good luck changing the plymouth theme on a readonly filesystem
+	-- sddm-kcm				: The user doesn't see sddm on this system
+	-- oxygen				: old school.
+
 local bundlePackages = [[
+
+
+aurorae
+bluedevil
+breeze
+breeze-gtk
+discover
+drkonqi
+flatpak-kcm
+kactivitymanagerd
+kde-cli-tools
+kde-gtk-config
+kdecoration
+kdeplasma-addons
+kgamma
+kglobalacceld
+kinfocenter
+kmenuedit
+knighttime
+kpipewire
+krdp
+kscreen
+kscreenlocker
+ksshaskpass
+ksystemstats
+kwallet-pam
+kwayland
+kwin
+kwrited
+layer-shell-qt
+libkscreen
+libksysguard
+libplasma
+milou
+ocean-sound-theme
+plasma5support
+plasma-activities
+plasma-activities-stats
+plasma-desktop
+plasma-disks
+plasma-firewall
+plasma-integration
+plasma-nm
+plasma-pa
+plasma-systemmonitor
+plasma-thunderbolt
+plasma-vault
+plasma-welcome
+plasma-workspace
+plasma-workspace-wallpapers
+polkit-kde-agent
+powerdevil
+print-manager
+spectacle
+systemsettings
+wacomtablet
+xdg-desktop-portal-kde
+
+dolphin-plugins
+ffmpegthumbs
+kde-inotify-survey
+kdeconnect
+kdegraphics-thumbnailers
+kdenetwork-filesharing
+qqc2-desktop-style
+qrca
+kimageformats
+khelpcenter
+kio-admin
+kio-extras
+kio-fuse
+kio-gdrive
+
+
 
 amd-ucode
 intel-ucode
@@ -78,7 +162,6 @@ tlp
 tlp-pd
 unzip
 zip
-plasma
 cups cups-pdf
 system-config-printer
 noto-fonts
@@ -108,6 +191,7 @@ grub
 jc
 sudo
 btrfs-progs
+sddm
 ]]
 
 
@@ -228,10 +312,7 @@ rm -r /usr/include
 rm -r /usr/share/doc
 rm -r /usr/share/man
 
-for dir in /usr/share/locale/*; do
-    [ "$dir" = "en_US" ] && continue
-    rm -rf "$dir"
-done
+# TODO: remove locales
 
 rm /temp-pacman.conf
 rm /post-pacstrap.sh

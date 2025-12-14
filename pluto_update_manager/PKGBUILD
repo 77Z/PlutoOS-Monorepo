@@ -1,8 +1,8 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=pluto-update-manager
-pkgver=1.4
-pkgrel=1
+pkgver=1.7
+pkgrel=2
 epoch=
 pkgdesc="PlutoOS Update Manager"
 arch=(x86_64)

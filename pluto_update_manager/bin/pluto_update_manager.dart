@@ -75,12 +75,15 @@ void showHelpAndDie() {
       PlutoOS Update Manager
 -------------------------------------
 commands:
-  check-for-update : prints 1 and exits with 0 if an update is available.
-  invoke-update    : if there's an update, this will prompt the system to
-                     download and install it. This also shows an update dialog
-                     to the user.
-  check-on-boot    : usually executed by a systemd timer, this will show a
-                     notification to the user reminding them to update.
+  check-for-update        : prints 1 and exits with 0 if an update is available.
+  invoke-update           : if there's an update, this will prompt the system to
+                            download and install it. This also shows an update dialog
+                            to the user.
+  check-on-boot           : usually executed by a systemd timer, this will show a
+                            notification to the user reminding them to update.
+  switch-to-beta-channel  : takes one additional param, does what it says.
+  unenroll-from-beta      : does what it says
+  get-beta-channel        : currently enrolled? it'll print it.
 """);
 
   exit(1);
@@ -149,6 +152,15 @@ Future<bool> executeUpdate(String targetVersion) async {
   final ROOTAdevPath = File("/dev/disk/by-label/ROOTA").resolveSymbolicLinksSync();
   final ROOTBdevPath = File("/dev/disk/by-label/ROOTB").resolveSymbolicLinksSync();
 
+  print("Drive labels:");
+  print("EFIA -> $EFIAdevPath");
+  print("EFIB -> $EFIBdevPath");
+  print("ROOTA -> $ROOTAdevPath");
+  print("ROOTB -> $ROOTBdevPath");
+
+
+  // WARNING: processes executed THROUGH bash -c as regular user in a suid program
+  // like this one will run as the regular user. rauc install here runs as user 1000
   final updateSubprocess = await Process.start("bash", [
     "-c",
     "rauc install $updateBundleLocation"
@@ -181,14 +193,18 @@ Future<bool> executeUpdate(String targetVersion) async {
   // btrfs doesn't like when you use the device names directly when they're mounted,
   // but in this case it doesn't really matter cause the one that's mounted is already
   // labelled, so one of these will fail and that's okay.
-  await Process.run("bash", ["-c", "btrfs filesystem label $ROOTAdevPath ROOTA"]);
-  await Process.run("bash", ["-c", "btrfs filesystem label $ROOTBdevPath ROOTB"]);
+  var res = await Process.run("btrfs", ["filesystem", "label", ROOTAdevPath, "ROOTA"]);
+  print("${res.stdout}\n${res.stderr}");
+  res = await Process.run("btrfs", ["filesystem", "label", ROOTBdevPath, "ROOTB"]);
+  print("${res.stdout}\n${res.stderr}");
 
-  await Process.run("bash", ["-c", "e2label $EFIAdevPath EFIA"]);
-  await Process.run("bash", ["-c", "e2label $EFIBdevPath EFIB"]);
+  res = await Process.run("e2label", [EFIAdevPath, "EFIA"]);
+  print("${res.stdout}\n${res.stderr}");
+  res = await Process.run("e2label", [EFIBdevPath, "EFIB"]);
+  print("${res.stdout}\n${res.stderr}");
 
-  await Process.run("udevadm", ["trigger"]);
-
+  res = await Process.run("udevadm", ["trigger"]);
+  print("${res.stdout}\n${res.stderr}");
 
   return true;
 }
@@ -257,13 +273,16 @@ Future<void> sendNotification(String summary,
     if (now.difference(lastNotificationSentTime).inMilliseconds >= 1000) {
       print("[PUM] $summary : $body");
 
-      await Process.run("/usr/bin/sudo", [
+      /*await Process.run("/usr/bin/sudo", [
         "--user=#1000",
         "/pluto/update_notification_helper",
         summary,
         body,
         expireTimeoutMs.toString(),
-      ]);
+      ]);*/
+
+      // await Process.run("/pluto/update_notification_helper", [summary, body, expireTimeoutMs.toString()]);
+      await Process.run("/usr/bin/bash", ["-c", "/pluto/update_notification_helper $summary $body ${expireTimeoutMs.toString()}"]);
     }
   }
 
