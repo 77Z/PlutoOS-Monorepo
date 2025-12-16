@@ -7,7 +7,7 @@ echo "garbage output, doesn't contain percentage!!"
 
 for i in {0..100..1}; do
 	echo "$i% complete."
-	sleep 0.2
+	sleep 0.4
 done
 echo "Task finished."
 

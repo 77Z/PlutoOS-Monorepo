@@ -34,6 +34,15 @@ async function executeCommand(command: string) {
 	}
 }
 
+// attempts to execute a command and will continue even if it fails.
+async function attemptCommand(command: string) {
+	try {
+		const { stdout, stderr } = await execCommand(command);
+	} catch(error) {
+		console.error("attempted command failed, oh well! " + command);
+	}
+}
+
 interface LatestVersionInfo {
 	stable: {
 		latestVersion: string;
@@ -99,7 +108,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	console.log(chalk.green("PlutoOS Installer v1.0.0"));
+	console.log(chalk.green("PlutoOS Installer v1.1.3"));
 
 	if (isDevMode()) {
 		console.log(chalk.redBright("-------------------------------------"));
@@ -447,6 +456,8 @@ echo w;
 	await executeCommand(`chown -R 1000:1000 /mnt/home/main`);
 	await executeCommand(`chmod 710 /mnt/home/main`);
 
+	await attemptCommand(`bash -c "killall gpg-agent"`);
+	await new Promise(resolve => setTimeout(resolve, 2000));
 
 	await executeCommand(`umount /mnt/chainloader`);
 	await executeCommand(`umount /mnt/home`);
@@ -475,7 +486,7 @@ echo w;
 	await executeCommand(`mount ${installedToA ? rootAPartPath : rootBPartPath} /mnt/rootB`);
 	await executeCommand(`mount ${chainloaderPartPath} /mnt/rootB/chainloader`);
 	await executeCommand(`mount ${homePartPath} /mnt/rootB/home`);
-	await executeCommand(`mount -t overlay overlay -o lowerdir=/mnt/rootB/etc,upperdir=/mnt/rootB/home/.etcOverlay/upper,workdir=/mnt/rootB/home/.etcOverlay/work /mnt/rootB/etc`);
+	await executeCommand(`mount -t overlay overlay -o lowerdir=/mnt/rootB/etc,upperdir=/mnt/rootB/home/.etcOverlay/upper,workdir=/mnt/rootB/home/.etcOverlay/work,index=off /mnt/rootB/etc`);
 
 	// set passwords
 	await executeCommand(`bash -c "yes '${userPassword}' | passwd -R /mnt/rootB main"`);
@@ -501,6 +512,11 @@ echo w;
 	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set B_TRY=${installedToA ? "0" : "1"}`);
 	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set A_GOOD=1`);
 	await executeCommand(`grub-editenv /mnt/rootB/chainloader/grub/grubenv set B_GOOD=1`);
+
+
+	await attemptCommand(`bash -c "killall gpg-agent"`);
+	await new Promise(resolve => setTimeout(resolve, 2000));
+
 
 	await executeCommand(`umount /mnt/rootB/etc`);
 	await executeCommand(`umount /mnt/rootB/chainloader`);

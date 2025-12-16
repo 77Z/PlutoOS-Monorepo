@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,11 +14,28 @@ class ActivelyUpdatingPage extends StatefulWidget {
 }
 
 class ActivelyUpdatingPageState extends State<ActivelyUpdatingPage> {
+  int? progress;
+  // Latest line of output from stdout of the update subprocess
+  String stdoutLine = "";
+
   @override
   void initState() {
     super.initState();
 
-    Process.run("/pluto/pluto_update_manager", ["invoke-update"]);
+    updateSubprocess();
+  }
+
+  Future<void> updateSubprocess() async {
+    final res = await Process.start("/pluto/pluto_update_manager", ["invoke-update"/* , "fake-run" */]);
+
+    res.stdout.transform(utf8.decoder).listen((String data) {
+      setState(() {
+        stdoutLine = data;
+
+        final progressMatch = RegExp(r'(\d+)%').firstMatch(data);
+        if (progressMatch != null) progress = int.parse(progressMatch.group(1)!);
+      });
+    });
   }
 
   @override
@@ -28,7 +46,15 @@ class ActivelyUpdatingPageState extends State<ActivelyUpdatingPage> {
       children: [
         const Icon(YaruIcons.checkmark, color: YaruColors.adwaitaGreen, size: 60),
         const Text("Update Started", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: YaruColors.adwaitaGreen),),
-        const Text("See notifications for progress")
+        const Text("Update will continue if this window is closed"),
+        Divider(indent: 40, endIndent: 40, height: 25),
+        Text(stdoutLine),
+        SizedBox(
+          width: 300,
+          child: LinearProgressIndicator(
+            value: progress == null ? null : progress!.toDouble() / 100,
+          ),
+        )
       ],
     );
 
@@ -153,7 +179,9 @@ class SystemUpdatesPageState extends State<SystemUpdatesPage> {
   }
 
   Future<void> getLatestPlutoOSVersion() async {
-    latestVersionInfo = await PlutoosSystemLibrary.getLatestVersionInfo();
+    var verInfo = await PlutoosSystemLibrary.getLatestVersionInfo();
+
+    setState(() => latestVersionInfo = verInfo);
   }
 
   Future<void> getYourPlutoOSVersion() async {

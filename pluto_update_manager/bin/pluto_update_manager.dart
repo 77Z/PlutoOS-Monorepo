@@ -89,7 +89,8 @@ commands:
   exit(1);
 }
 
-Future<bool> executeUpdate(String targetVersion) async {
+/// [fakeRun] bool that "fakes" an update for development purposes.
+Future<bool> executeUpdate(String targetVersion, bool fakeRun) async {
 
   // where should plutoos download the bundle to before installing?
   final updateBundleLocation = "/home/update.raucb";
@@ -105,6 +106,8 @@ Future<bool> executeUpdate(String targetVersion) async {
   }
 
   var keyString = File("/etc/rauc/authkey").readAsStringSync();
+
+  print("Downloading PlutoOS...");
 
   await downloadFileWithProgress(
     "${PlutoosSystemLibrary.getAPIUrl()}/altDownload?key=$keyString&bundleName=PlutoOS-Update-$targetVersion.raucb",
@@ -147,10 +150,19 @@ Future<bool> executeUpdate(String targetVersion) async {
 
   // before we start, we need to capture the drive labels associated
   // devs to reassign them after bundle installation.
-  final EFIAdevPath = File("/dev/disk/by-label/EFIA").resolveSymbolicLinksSync();
-  final EFIBdevPath = File("/dev/disk/by-label/EFIB").resolveSymbolicLinksSync();
-  final ROOTAdevPath = File("/dev/disk/by-label/ROOTA").resolveSymbolicLinksSync();
-  final ROOTBdevPath = File("/dev/disk/by-label/ROOTB").resolveSymbolicLinksSync();
+  String EFIAdevPath = "";
+  String EFIBdevPath = "";
+  String ROOTAdevPath = "";
+  String ROOTBdevPath = "";
+
+  if (fakeRun) {
+    print("Run is fake, we don't update drive labels here");
+  } else {
+    EFIAdevPath = File("/dev/disk/by-label/EFIA").resolveSymbolicLinksSync();
+    EFIBdevPath = File("/dev/disk/by-label/EFIB").resolveSymbolicLinksSync();
+    ROOTAdevPath = File("/dev/disk/by-label/ROOTA").resolveSymbolicLinksSync();
+    ROOTBdevPath = File("/dev/disk/by-label/ROOTB").resolveSymbolicLinksSync();
+  }
 
   print("Drive labels:");
   print("EFIA -> $EFIAdevPath");
@@ -158,13 +170,14 @@ Future<bool> executeUpdate(String targetVersion) async {
   print("ROOTA -> $ROOTAdevPath");
   print("ROOTB -> $ROOTBdevPath");
 
+  print("Installing PlutoOS...");
 
   // WARNING: processes executed THROUGH bash -c as regular user in a suid program
   // like this one will run as the regular user. rauc install here runs as user 1000
   final updateSubprocess = await Process.start("bash", [
     "-c",
+    fakeRun ? "/code/PlutoDevelopment/PlutoOS-Monorepo/pluto_update_manager/bin/fakeprogress.sh" :
     "rauc install $updateBundleLocation"
-    // "/code/PlutoDevelopment/PlutoOS-Monorepo/pluto_update_manager/bin/fakeprogress.sh"
   ]);
 
   updateSubprocess.stdout
@@ -187,6 +200,11 @@ Future<bool> executeUpdate(String targetVersion) async {
   {
     final updateBundle = File(updateBundleLocation);
     if (updateBundle.existsSync()) updateBundle.deleteSync();
+  }
+
+  if (fakeRun) {
+    print("Run faked, skipping re-labeling.");
+    return true;
   }
 
   // reassign labels captured earlier
@@ -271,7 +289,7 @@ Future<void> sendNotification(String summary,
   int replacesId = 0 }) async{
     final now = DateTime.now();
     if (now.difference(lastNotificationSentTime).inMilliseconds >= 1000) {
-      print("[PUM] $summary : $body");
+      print("$summary : $body");
 
       /*await Process.run("/usr/bin/sudo", [
         "--user=#1000",
@@ -312,7 +330,6 @@ void main(List<String> arguments) async {
       break;
 
     case "invoke-update":
-      print("Attempting to update system!");
       final versionInfo = await PlutoosSystemLibrary.getLatestVersionInfo();
 
       if (versionInfo == null) {
@@ -333,7 +350,10 @@ void main(List<String> arguments) async {
         exit(1);
       } */
 
-      final success = await executeUpdate(futureVersion);
+      bool isFakeRun = arguments.length > 1 && arguments[1] == "fake-run";
+      if (isFakeRun) print("Fake run!!!");
+
+      final success = await executeUpdate(futureVersion, isFakeRun);
 
       if (!success) exit(1);
 
@@ -341,6 +361,8 @@ void main(List<String> arguments) async {
         "PlutoOS Update Complete!",
         body: "$currentVersion → $futureVersion\nRestart to use new version.",
       );
+
+      File("/tmp/PlutoOS-waiting-for-reboot").writeAsStringSync("");
 
       exit(0);
 

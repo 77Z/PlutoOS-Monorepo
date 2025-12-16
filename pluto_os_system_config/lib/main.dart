@@ -144,9 +144,10 @@ class _Home extends StatelessWidget {
             return Center(child: 
               PlutoosSystemLibrary.isFrameworkLaptop() ? const Text("You are running on framework!") : const Text("Not a framework :("),);
           } else if (index == 5) {
-            return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
+            // return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
+            return Center(child: const Text("Page WIP..."),);
           } else if (index == 6) {
-            return Center(child: const Text("backup user data"),);
+            return Center(child: const Text("Page WIP..."),);
           } else if (index == 7) {
             // return Center(child: const Text("show battery wattage, and breakdown of what's drawing power"));
 
@@ -161,130 +162,3 @@ class _Home extends StatelessWidget {
     );
   }
 }
-
-/* class DriversPage extends StatefulWidget {
-  const DriversPage({super.key});
-
-  @override
-  State<DriversPage> createState() => _DriversPageState();
-}
-
-class _DriversPageState extends State<DriversPage> {
-  List<FirmwareBundle> firmwareBundles = [];
-  bool isLoading = true;
-
-  @override
-  void initState() {
-    super.initState();
-    loadFirmwareBundles();
-  }
-
-  Future<void> loadFirmwareBundles() async {
-    try {
-      final File jsonFile = File(
-        '/code/PlutoDevelopment/pluto_os_system_config/data/firmware_bundles.json',
-      );
-
-      if (!await jsonFile.exists()) {
-        return;
-      }
-
-      final String jsonString = await jsonFile.readAsString();
-      final List<dynamic> jsonList = json.decode(jsonString);
-
-      setState(() {
-        firmwareBundles = jsonList
-            .map((json) => FirmwareBundle.fromJson(json))
-            .toList();
-        isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Text(
-                "PlutoOS Firmware Bundles",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-              IconButton(
-                icon: const Icon(Icons.refresh),
-                onPressed: () {
-                  setState(() {
-                    isLoading = true;
-                  });
-                  loadFirmwareBundles();
-                },
-                tooltip: 'Refresh firmware bundles',
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          if (isLoading)
-            const Center(child: CircularProgressIndicator())
-          else
-            Expanded(
-              child: ListView.builder(
-                physics: const BouncingScrollPhysics(),
-                itemCount: firmwareBundles.length,
-                itemBuilder: (context, index) {
-                  final bundle = firmwareBundles[index];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 8.0),
-                    child: SizedBox(
-                      width: 300,
-                      child: Card.filled(
-                        child: Padding(
-                          padding: const EdgeInsets.all(12.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                bundle.name,
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                bundle.package,
-                                style: TextStyle(
-                                  color: Theme.of(context).colorScheme.primary,
-                                  fontFamily: 'monospace',
-                                ),
-                              ),
-                              const SizedBox(height: 4),
-                              Text(
-                                bundle.description,
-                                style: TextStyle(
-                                  color: Theme.of(
-                                    context,
-                                  ).colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-} */

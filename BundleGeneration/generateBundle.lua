@@ -192,6 +192,7 @@ jc
 sudo
 btrfs-progs
 sddm
+kitty
 ]]
 
 
