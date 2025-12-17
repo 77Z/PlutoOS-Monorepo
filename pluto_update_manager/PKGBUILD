@@ -1,7 +1,7 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=pluto-update-manager
-pkgver=1.12
+pkgver=1.13
 pkgrel=2
 epoch=
 pkgdesc="PlutoOS Update Manager"

@@ -75,7 +75,7 @@ class _Home extends StatelessWidget {
     return Scaffold(
       appBar: YaruWindowTitleBar(),
       body: YaruMasterDetailPage(
-        length: 10,
+        length: 8,
         tileBuilder: (context, index, selected, availableWidth) {
           if (index == 0) {
             return const YaruMasterTile(
@@ -89,35 +89,30 @@ class _Home extends StatelessWidget {
             );
           } else if (index == 2) {
             return const YaruMasterTile(
-              title: Text("Drivers & Firmware"),
-              leading: Icon(YaruIcons.drive_optical_filled),
+              title: Text("Devices & Drivers"),
+              leading: Icon(YaruIcons.computer_filled)
             );
           } else if (index == 3) {
-            return const YaruMasterTile(
-              title: Text("Devices"),
-              leading: Icon(YaruIcons.computer_filled),
-            );
-          } else if (index == 4) {
             return const YaruMasterTile(
               title: Text("Framework Exclusive"),
               leading: Icon(YaruIcons.computer_legacy),
             );
-          } else if (index == 5) {
+          } else if (index == 4) {
             return const YaruMasterTile(
               title: Text("System Storage"),
               leading: Icon(YaruIcons.drive_harddisk_broken),
             );
-          } else if (index == 6) {
+          } else if (index == 5) {
             return const YaruMasterTile(
               title: Text("Backup"),
               leading: Icon(YaruIcons.drive_harddisk_filled),
             );
-          } else if (index == 7) {
+          } else if (index == 6) {
             return const YaruMasterTile(
               title: Text("Power & Battery"),
               leading: Icon(YaruIcons.battery),
             );
-          } else if (index == 8) {
+          } else if (index == 7) {
             return Column(
               children: [
                 SizedBox(height: 50, width: 1,),
@@ -126,11 +121,6 @@ class _Home extends StatelessWidget {
                   leading: Icon(YaruIcons.information),
                 )
               ],
-            );
-          } else if (index == 9) {
-            return const YaruMasterTile(
-              title: Text("Devices & Drivers"),
-              leading: Icon(YaruIcons.computer_filled)
             );
           }
 
@@ -142,26 +132,22 @@ class _Home extends StatelessWidget {
           } else if (index == 1) {
             return LinuxEnvironmentPage();
           } else if (index == 2) {
-            return DriversPage();
+            return DdfPage();
           } else if (index == 3) {
-            return DevicesPage();
-          } else if (index == 4) {
             // framework module should let you control ambient light sensor, leds, etc.
             return Center(child: 
               PlutoosSystemLibrary.isFrameworkLaptop() ? const Text("You are running on framework!") : const Text("Not a framework :("),);
-          } else if (index == 5) {
+          } else if (index == 4) {
             // return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
             return Center(child: const Text("Page WIP..."),);
-          } else if (index == 6) {
+          } else if (index == 5) {
             return Center(child: const Text("Page WIP..."),);
-          } else if (index == 7) {
+          } else if (index == 6) {
             // return Center(child: const Text("show battery wattage, and breakdown of what's drawing power"));
 
             return PowerPage();
-          } else if (index == 8) {
+          } else if (index == 7) {
             return AboutPage();
-          } else if (index == 9) {
-            return DdfPage();
           }
 
           return Center(child: Text("Failed to load page"));

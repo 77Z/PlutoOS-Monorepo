@@ -4,7 +4,7 @@
 # Some pluto packages will enable themselves (eg. pluto-bootloader-backend)
 
 pkgname=pluto-system-services
-pkgver=2025.12.11
+pkgver=2025.12.16
 pkgrel=1
 pkgdesc='PlutoOS System Services'
 arch=('any')
@@ -25,6 +25,7 @@ package() {
     ["etc/systemd/system"]="755:0:0"
     ["etc/systemd/system/multi-user.target.wants"]="755:0:0"
     ["etc/systemd/system/graphical.target.wants"]="755:0:0"
+    ["etc/systemd/system/bluetooth.target.wants"]="755:0:0"
   )
 
   symlinks=(
@@ -40,6 +41,9 @@ package() {
     ["etc/systemd/system/graphical.target.wants/tlp-pd.service"]="/usr/lib/systemd/system/tlp-pd.service"
 
     ["etc/systemd/system/display-manager.service"]="/usr/lib/systemd/system/sddm.service"
+
+    ["etc/systemd/system/bluetooth.target.wants/bluetooth.service"]="/usr/lib/systemd/system/bluetooth.service"
+    ["etc/systemd/system/dbus-org.bluez.service"]="/usr/lib/systemd/system/bluetooth.service"
   )
 
   cd "$pkgdir"

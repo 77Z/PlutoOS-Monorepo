@@ -119,7 +119,6 @@ Future<bool> executeUpdate(String targetVersion, bool fakeRun) async {
           body: "Progress unknown, please wait...",
         );
       } else {
-        print("PROGRESS: ${(progress * 100.0).toInt()}");
         updatePercentDownloadedUI((progress * 100.0).toInt(), bytesReceived, bytesTotal);
       }
     });
