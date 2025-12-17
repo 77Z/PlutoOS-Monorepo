@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pluto_os_system_config/about_page.dart';
+import 'package:pluto_os_system_config/ddf_page.dart';
 import 'package:pluto_os_system_config/devices_page.dart';
 import 'package:pluto_os_system_config/drivers_page.dart';
 import 'package:pluto_os_system_config/linux_environment_page.dart';
@@ -74,7 +75,7 @@ class _Home extends StatelessWidget {
     return Scaffold(
       appBar: YaruWindowTitleBar(),
       body: YaruMasterDetailPage(
-        length: 9,
+        length: 10,
         tileBuilder: (context, index, selected, availableWidth) {
           if (index == 0) {
             return const YaruMasterTile(
@@ -126,6 +127,11 @@ class _Home extends StatelessWidget {
                 )
               ],
             );
+          } else if (index == 9) {
+            return const YaruMasterTile(
+              title: Text("Devices & Drivers"),
+              leading: Icon(YaruIcons.computer_filled)
+            );
           }
 
           throw Exception("Index misalligned?");
@@ -154,6 +160,8 @@ class _Home extends StatelessWidget {
             return PowerPage();
           } else if (index == 8) {
             return AboutPage();
+          } else if (index == 9) {
+            return DdfPage();
           }
 
           return Center(child: Text("Failed to load page"));

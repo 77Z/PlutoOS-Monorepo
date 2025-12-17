@@ -13,7 +13,6 @@ class DevicesPage extends StatefulWidget {
 }
 
 class DevicesPageState extends State<DevicesPage> {
-  String bruh = "BRUH";
   List<UsbDevice> usbDevices = [];
   List<PciDevice> pciDevices = [];
 
@@ -77,7 +76,6 @@ class DevicesPageState extends State<DevicesPage> {
             "USB Bus",
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
-          Text(bruh),
           ...usbDevices
               .map(
                 (device) => ListTile(

@@ -35,6 +35,7 @@ class PowerPageState extends State<PowerPage> {
   bool halfRateShading = false;
   bool downclockMemory = false;
   bool smartCoreShutdown = false;
+  bool boreEnabled = true;
 
   @override
   void initState() {
@@ -76,6 +77,13 @@ class PowerPageState extends State<PowerPage> {
               Tooltip(message: "Disables cores on the CPU when not under heavy use", child: Text("PlutoOS Smart Core Shutdown")),
               Spacer(),
               Switch(value: smartCoreShutdown, onChanged: (v) => setState(() => smartCoreShutdown = v)),
+            ],
+          ),
+          Row(
+            children: [
+              Text("Burst-Oriented CPU Scheduler"),
+              Spacer(),
+              Switch(value: boreEnabled, onChanged: (v) => setState(() => boreEnabled = v)),
             ],
           ),
           if (smartCoreShutdown) Text("Prioritizes shutting down P-cores if they're available on your CPU. Disable this setting if you notice system instability.")
