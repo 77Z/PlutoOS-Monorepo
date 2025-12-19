@@ -16,6 +16,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   plutoos_system_library:
     path: ../plutoos_system_api/
+  dbus: ^0.7.11
 
 dev_dependencies:
   flutter_test:
