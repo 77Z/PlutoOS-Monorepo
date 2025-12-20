@@ -1,7 +1,7 @@
 # Maintainer: Vince Richter <vince@77z.dev>
 
 pkgname=pluto-update-manager
-pkgver=1.13
+pkgver=1.15
 pkgrel=2
 epoch=
 pkgdesc="PlutoOS Update Manager"
@@ -16,5 +16,9 @@ build() {
 }
 
 package() {
+	install -Dm644 "$startdir/pluto-enable-swap.service" "$pkgdir/usr/lib/systemd/system/pluto-enable-swap.service"
+	mkdir -p "$pkgdir/usr/lib/systemd/system/multi-user.target.wants"
+	ln -s "/usr/lib/systemd/system/pluto-enable-swap.service" "$pkgdir/usr/lib/systemd/system/multi-user.target.wants/pluto-enable-swap.service"
+
 	install -Dm4755 "$startdir/bin/pluto_update_manager.exe" "$pkgdir/pluto/pluto_update_manager"
 }

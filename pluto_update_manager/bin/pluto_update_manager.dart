@@ -422,6 +422,43 @@ void main(List<String> arguments) async {
       print(betaFile.readAsStringSync());
       break;
 
+    // in here cause this program is suid root + I don't
+    // want more large dart binaries than I have to
+    case "setup-swap":
+      final swapSizeInGiB = double.parse(arguments[1]);
+
+      if (swapSizeInGiB > 100) {
+        print("Bad idea");
+        exit(1);
+      }
+
+      // disable and delete
+      if (File("/var/swap").existsSync()) {
+        Process.runSync("swapoff", ["/var/swap"]);
+        File("/var/swap").deleteSync();
+      }
+
+      // if 0 or less, we can stop here.
+      if (swapSizeInGiB <= 0) exit(0);
+
+      // ...otherwise, we need to make a new swapfile
+      var res = Process.runSync("fallocate", ["-l${swapSizeInGiB}G", "/var/swap"]);
+      if (res.exitCode != 0) exit(1);
+      res = Process.runSync("mkswap", ["/var/swap"]);
+      if (res.exitCode != 0) exit(1);
+      res = Process.runSync("swapon", ["/var/swap"]);
+      if (res.exitCode != 0) exit(1);
+
+      break;
+
+    // Run by systemd service on boot. runs swapon if swap exists
+    case "swap-on-boot":
+      if (!File("/var/swap").existsSync()) exit(0);
+
+      final res = Process.runSync("swapon", ["/var/swap"]);
+      if (res.exitCode != 0) exit(1);
+      break;
+
     default:
       print("command not found");
   }

@@ -118,6 +118,29 @@ static String? getBetaChannel() {
   return File("/chainloader/BETA").readAsStringSync();
 }
 
+static bool isSwapEnabled() {
+  final swapfileExists = File("/var/swap").existsSync();
+  if (!swapfileExists) return false;
+
+  final res = Process.runSync("swapon", ["--show"]);
+  if (res.stdout.toString().split("\n").length < 2) return false;
+
+  return true;
+}
+
+static double? getSwapSizeInGiB() {
+  if (!isSwapEnabled()) return null;
+
+  final fileSizeInBytes = File("/var/swap").lengthSync();
+  return fileSizeInBytes / (1024 * 1024 * 1024);
+}
+
+static bool setupSwap(double sizeInGiB) {
+  final res = Process.runSync("/pluto/pluto_update_manager", ["setup-swap", sizeInGiB.toString()]);
+
+  return res.exitCode == 0;
+}
+
 }
 
 class PlutoDevice {

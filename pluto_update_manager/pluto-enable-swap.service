@@ -1,0 +1,9 @@
+[Unit]
+Description=Turns on the special PlutoOS swapfile on boot
+
+[Service]
+Type=oneshot
+ExecStart=/pluto/pluto_update_manager swap-on-boot
+
+[Install]
+WantedBy=multi-user.target

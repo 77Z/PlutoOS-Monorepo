@@ -5,6 +5,7 @@ import 'package:pluto_os_system_config/devices_page.dart';
 import 'package:pluto_os_system_config/drivers_page.dart';
 import 'package:pluto_os_system_config/linux_environment_page.dart';
 import 'package:pluto_os_system_config/power_page.dart';
+import 'package:pluto_os_system_config/storage_page.dart';
 import 'package:pluto_os_system_config/system_updates_page.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
 import 'package:yaru/yaru.dart';
@@ -139,7 +140,9 @@ class _Home extends StatelessWidget {
               PlutoosSystemLibrary.isFrameworkLaptop() ? const Text("You are running on framework!") : const Text("Not a framework :("),);
           } else if (index == 4) {
             // return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
-            return Center(child: const Text("Page WIP..."),);
+            // return Center(child: const Text("Page WIP..."),);
+
+            return StoragePage();
           } else if (index == 5) {
             return Center(child: const Text("Page WIP..."),);
           } else if (index == 6) {
