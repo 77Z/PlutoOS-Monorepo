@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:plutoos_system_library/plutoos_system_library.dart';
 import 'package:yaru/yaru.dart';
@@ -36,10 +38,27 @@ class PowerPageState extends State<PowerPage> {
   bool downclockMemory = false;
   bool smartCoreShutdown = false;
   bool boreEnabled = true;
+  Timer? timer;
 
   @override
   void initState() {
     super.initState();
+
+    initTimer();
+  }
+
+  void initTimer() {
+    if (timer != null && timer!.isActive) return;
+
+    timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -57,7 +76,6 @@ class PowerPageState extends State<PowerPage> {
               Icon(PlutoOSPower.isBatteryCharging(batteryPath) ? YaruIcons.arrow_up : YaruIcons.arrow_down, size: 50)
             ],
           ),
-          ElevatedButton(onPressed: () { setState(() {}); }, child: const Text("Reload")),
           Row(
             children: [
               Text("GPU Half-Rate Shading"),

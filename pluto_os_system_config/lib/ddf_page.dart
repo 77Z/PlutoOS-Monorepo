@@ -1,13 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:dbus/dbus.dart';
 import 'package:flutter/material.dart';
 import 'package:pluto_os_system_config/lspci_output.dart';
 import 'package:pluto_os_system_config/lsusb_output.dart';
-import 'package:yaru/icons.dart';
 import 'package:yaru/yaru.dart';
+
 import 'fwupd-interface.dart';
-import 'package:dbus/dbus.dart';
 
 
 /* ----------- Drivers Page ----------- */
