@@ -3,6 +3,7 @@ import 'package:pluto_os_system_config/about_page.dart';
 import 'package:pluto_os_system_config/ddf_page.dart';
 import 'package:pluto_os_system_config/devices_page.dart';
 import 'package:pluto_os_system_config/drivers_page.dart';
+import 'package:pluto_os_system_config/hardware_recipes.dart';
 import 'package:pluto_os_system_config/linux_environment_page.dart';
 import 'package:pluto_os_system_config/power_page.dart';
 import 'package:pluto_os_system_config/storage_page.dart';
@@ -95,7 +96,7 @@ class _Home extends StatelessWidget {
             );
           } else if (index == 3) {
             return const YaruMasterTile(
-              title: Text("Framework Exclusive"),
+              title: Text("Hardware Recipes"),
               leading: Icon(YaruIcons.computer_legacy),
             );
           } else if (index == 4) {
@@ -136,8 +137,7 @@ class _Home extends StatelessWidget {
             return DdfPage();
           } else if (index == 3) {
             // framework module should let you control ambient light sensor, leds, etc.
-            return Center(child: 
-              PlutoosSystemLibrary.isFrameworkLaptop() ? const Text("You are running on framework!") : const Text("Not a framework :("),);
+            return HardwareRecipes();
           } else if (index == 4) {
             // return Center(child: const Text("PlutoOS makeup, user files, and swap"),);
             // return Center(child: const Text("Page WIP..."),);
